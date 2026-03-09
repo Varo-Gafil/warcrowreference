@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warcrow Companion | Skirmish Reference</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@300;400;600&display=swap');
+
+        :root {
+            --warcrow-gold: #c5a059;
+            --warcrow-dark: #0a0c10;
+            --warcrow-card: #161a21;
+            --warcrow-border: #2d343f;
+            --warcrow-red: #8b1e1e;
+            --warcrow-purple: #4a1d6e;
+        }
+
+        body {
+            background-color: var(--warcrow-dark);
+            color: #e2e8f0;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .heading-font { font-family: 'Cinzel', serif; }
+        .gold-text { color: var(--warcrow-gold); }
+        
+        .action-card {
+            background-color: var(--warcrow-card);
+            border: 1px solid var(--warcrow-border);
+            transition: all 0.2s ease;
+            overflow: hidden;
+        }
+
+        .action-card:hover { border-color: var(--warcrow-gold); }
+
+        details summary {
+            list-style: none;
+            cursor: pointer;
+            outline: none;
+        }
+
+        details summary::-webkit-details-marker { display: none; }
+
+        details[open] summary {
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 1rem;
+        }
+
+        .nav-link {
+            position: relative;
+            cursor: pointer;
+            transition: color 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .nav-link.active { color: var(--warcrow-gold); }
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--warcrow-gold);
+        }
+
+        .category-header {
+            border-left: 3px solid var(--warcrow-gold);
+            padding-left: 12px;
+            margin: 2rem 0 1rem 0;
+        }
+
+        .step-list {
+            list-style: none;
+            padding-left: 0;
+            counter-reset: step-counter;
+        }
+
+        .step-item {
+            position: relative;
+            padding-left: 1.5rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+            color: #a0aec0;
+        }
+
+        .step-item::before {
+            counter-increment: step-counter;
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            color: var(--warcrow-gold);
+            font-weight: bold;
+            font-size: 0.75rem;
+        }
+
+        .scenario-radio {
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--warcrow-border);
+            border-radius: 50%;
+            cursor: pointer;
+            position: relative;
+            background: transparent;
+        }
+        .scenario-radio:checked {
+            border-color: var(--warcrow-gold);
+        }
+        .scenario-radio:checked::after {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: var(--warcrow-gold);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .selected-row {
+            background: rgba(197, 160, 89, 0.05);
+        }
+
+        .chevron { transition: transform 0.2s ease; }
+        details[open] .chevron { transform: rotate(180deg); }
+
+        .fade-in { animation: fadeIn 0.3s ease-in forwards; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .btn-gold {
+            background: var(--warcrow-gold);
+            color: var(--warcrow-dark);
+            font-family: 'Cinzel', serif;
+            font-weight: bold;
+            letter-spacing: 0.1em;
+            padding: 0.75rem 2rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+        .btn-gold:hover {
+            filter: brightness(1.1);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(197, 160, 89, 0.3);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--warcrow-gold);
+            border: 1px solid var(--warcrow-gold);
+            font-family: 'Cinzel', serif;
+            font-weight: bold;
+            letter-spacing: 0.1em;
+            padding: 0.75rem 2rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+        .btn-outline:hover {
+            background: rgba(197, 160, 89, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: transparent;
+            color: #ef4444;
+            border: 1px solid #ef4444;
+            font-family: 'Cinzel', serif;
+            font-weight: bold;
+            letter-spacing: 0.1em;
+            padding: 0.75rem 2rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+        .btn-danger:hover {
+            background: rgba(239, 68, 68, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(239, 68, 68, 0.2);
+        }
+
+        .counter-btn {
+            width: 40px;
+            height: 40px;
+            border: 1px solid var(--warcrow-border);
+            background: rgba(255,255,255,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+        .counter-btn:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: var(--warcrow-gold);
+        }
+
+        footer {
+            margin-top: auto;
+            border-top: 1px solid var(--warcrow-border);
+            background: #0d1016;
+        }
+
+        .map-image {
+            width: 100%;
+            max-width: 400px;
+            border: 1px solid var(--warcrow-border);
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <header class="sticky top-0 z-50 bg-[#0a0c10] border-b border-[#2d343f] py-4 px-6 shadow-xl">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="flex items-center gap-4">
+                <div onclick="setView('home')" class="cursor-pointer">
+                    <h1 class="heading-font text-2xl font-bold tracking-widest gold-text">WARCROW</h1>
+                    <p class="text-[10px] uppercase tracking-[0.2em] opacity-60">Rulebook 1.5.1 Reference</p>
+                </div>
+            </div>
+            
+            <nav class="flex gap-4 md:gap-6 text-[10px] md:text-xs font-semibold uppercase tracking-widest overflow-x-auto pb-4 md:pb-2 w-full md:w-auto">
+                <span onclick="setView('home')" id="nav-home" class="nav-link active">Home</span>
+                <span onclick="setView('scenario')" id="nav-scenario" class="nav-link">Scenario</span>
+                <span onclick="setView('scoreboard')" id="nav-scoreboard" class="nav-link">Scoreboard</span>
+                <span onclick="setView('summary')" id="nav-summary" class="nav-link">Turn Summary</span>
+                <span onclick="setView('tests')" id="nav-tests" class="nav-link">Test Summary</span>
+                <span onclick="setView('actions')" id="nav-actions" class="nav-link">Actions</span>
+                <span onclick="setView('magic')" id="nav-magic" class="nav-link">Magic</span>
+                <span onclick="setView('states')" id="nav-states" class="nav-link">States</span>
+                <span onclick="setView('keywords')" id="nav-keywords" class="nav-link">Keywords</span>
+                <span onclick="setView('abilities')" id="nav-abilities" class="nav-link">Abilities</span>
+            </nav>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-6 mt-8 mb-24" id="mainContent"></main>
+
+    <!-- Search Footer -->
+    <footer class="fixed bottom-0 left-0 right-0 p-4 md:p-6 z-40 bg-[#0a0c10]/95 backdrop-blur-md">
+        <div class="max-w-2xl mx-auto flex flex-col md:flex-row items-center gap-4">
+            <div class="relative w-full">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="h-4 w-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </div>
+                <input type="text" id="searchInput" placeholder="Search rules, keywords, or actions..." class="bg-white/5 border border-[#2d343f] w-full py-3 pl-10 pr-4 rounded-lg text-sm text-white focus:outline-none focus:border-[#c5a059] transition-all shadow-2xl">
+            </div>
+            <p class="hidden md:block text-[9px] uppercase tracking-widest text-slate-500 font-bold whitespace-nowrap">Press <span class="text-slate-300">/</span> to search</p>
+        </div>
+    </footer>
+
+    <script>
+        // GLOBAL APP STATE (Persistent throughout navigation)
+        let selectedScenario = null;
+        let selectedFeat = null;
+        let currentView = 'home';
+        
+        let scoreState = {
+            p1: { military: 0, arcane: 0 },
+            p2: { military: 0, arcane: 0 }
+        };
+
+        const data = {
+            scenario: [
+                {
+                    category: "Scenarios",
+                    items: [
+                        { 
+                            id: "s1", 
+                            name: "Take Position", 
+                            desc: "Control vital strategic points on the map.", 
+                            image: "TakePositions.png",
+                            steps: [
+                                "Place 3 objective markers along the center line.", 
+                                "Score VP at the end of each round for each marker controlled.", 
+                                "A unit controls a marker if it has the most models within 2 strides."
+                            ] 
+                        },
+                        { id: "s2", name: "Influence Zones", desc: "Exert pressure across the sectors of the battlefield.", steps: ["Divide the board into 6 equal zones.", "Score VP based on having more models in a zone than the opponent.", "Characters count as 2 models for influence purposes."] },
+                        { id: "s3", name: "Expanse", desc: "Push into enemy territory while holding your ground.", steps: ["Score VP for units in the opponent's deployment zone.", "Bonus VP for maintaining a unit in your own deployment zone.", "Mobile units are key for this wide-front engagement."] },
+                        { id: "s4", name: "Loot", desc: "Recover precious resources from the fog.", steps: ["Place 5 loot tokens scattered across the center.", "Interact action (1 AP) to pick up a token.", "Units drop tokens if they are destroyed or gain certain states."] },
+                        { id: "s5", name: "Consolidated Progress", desc: "Maintain a steady advance across the field.", steps: ["Score VP for units that end their activation closer to the enemy edge than they started.", "Reset scoring if units retreat.", "Favors steady, disciplined advancements."] },
+                        { id: "s6", name: "Quadrants", desc: "Dominate the four corners of the battlefield.", steps: ["Score VP for each quadrant controlled.", "Control requires a unit with at least 50% HP remaining.", "Contested quadrants grant no points."] }
+                    ]
+                },
+                {
+                    category: "Feats",
+                    items: [
+                        { id: "f1", name: "Track", desc: "Mark and hunt down specific enemy assets.", steps: ["Secretly choose an enemy unit at the start of the game.", "Score VP if that unit is destroyed or reduced to 1 HP by the end."] },
+                        { id: "f2", name: "Decapitation", desc: "Target the enemy leadership directly.", steps: ["Score VP for destroying the enemy Leader.", "Bonus VP if your own Leader is the one who deals the final blow."] },
+                        { id: "f3", name: "Rifts", desc: "Interact with the Lindwurm's unstable energies.", steps: ["Score VP for closing magical rifts or standing near them during the end phase.", "Risk Tinge damage when near active rifts."] },
+                        { id: "f4", name: "Banners", desc: "Display your colors and demoralize the foe.", steps: ["One unit per player carries a banner.", "Score VP each round the banner is within the center 12 inches and the carrier is not Engaged."] },
+                        { id: "f5", name: "Resources", desc: "Secure supplies to sustain the war effort.", steps: ["Occupy specific supply caches.", "Score VP at the end of the game based on total caches held."] }
+                    ]
+                }
+            ],
+            summary: [
+                {
+                    category: "The Game Round",
+                    items: [
+                        {
+                            name: "1. Start of Round",
+                            desc: "Preparation before activations begin.",
+                            steps: ["Advance Round Counter.", "Resolve Start of Round Effects.", "Initiative Roll."]
+                        },
+                        {
+                            name: "2. The Turn Phase",
+                            desc: "The core of the game where units act.",
+                            steps: ["Alternating Activations.", "Perform up to 2 Actions.", "Mark Activated.", "Pass if no units remain."]
+                        },
+                        {
+                            name: "3. End of Round",
+                            desc: "Cleanup and objective scoring.",
+                            steps: ["Resolve End of Round Effects.", "Score Victory Points.", "Remove Activated Tokens.", "Check Game End."]
+                        }
+                    ]
+                }
+            ],
+            tests: [
+                {
+                    category: "Attack Resolutions",
+                    items: [
+                        {
+                            name: "Melee Attack Process",
+                            desc: "Standard procedure for Resolving Melee.",
+                            steps: ["Declare Attack.", "Gather Dice.", "The Face-to-Face Roll.", "Apply Modifiers.", "Cancel Successes.", "Calculate Damage.", "Resolve Tinge."]
+                        }
+                    ]
+                }
+            ],
+            actions: [
+                {
+                    category: "Simple Actions (1 Action Point)",
+                    items: [
+                        { name: "Move", desc: "Reposition on the battlefield.", steps: ["Move up to MOV.", "Rotate freely.", "Stop on contact."] },
+                        { name: "Melee Attack", desc: "Standard strike.", steps: ["Base contact required.", "Face-to-face roll."] }
+                    ]
+                }
+            ],
+            magic: [
+                { category: "Process", items: [{ name: "Casting", desc: "Steps for casting spells.", steps: ["Declare.", "Verify Range/LoS.", "Gather Dice.", "Roll.", "Resolve."] }] }
+            ],
+            states: [
+                { category: "States", items: [{ name: "Slowed", desc: "MOV reduced by half." }] }
+            ],
+            keywords: [
+                { category: "Keywords", items: [{ name: "Piercing", desc: "Ignores some shields." }] }
+            ],
+            abilities: [
+                { category: "Abilities", items: [{ name: "Piercing", desc: "Ignores some shields." }] }
+            ]
+        };
+
+        const mainContent = document.getElementById('mainContent');
+        const searchInput = document.getElementById('searchInput');
+
+        function setView(view) {
+            currentView = view;
+            document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
+            const activeNav = document.getElementById(`nav-${view}`);
+            if (activeNav) activeNav.classList.add('active');
+            render();
+            window.scrollTo(0, 0);
+        }
+
+        function updateScore(player, type, delta) {
+            scoreState[player][type] = Math.max(0, scoreState[player][type] + delta);
+            if (currentView === 'scoreboard') renderScoreboard();
+        }
+
+        function startRandomAdventure() {
+            const scenarios = data.scenario[0].items;
+            const feats = data.scenario[1].items;
+            selectedScenario = scenarios[Math.floor(Math.random() * scenarios.length)].id;
+            selectedFeat = feats[Math.floor(Math.random() * feats.length)].id;
+            setView('scoreboard');
+        }
+
+        function renderHome() {
+            mainContent.innerHTML = `
+                <div class="fade-in text-center py-12">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div onclick="setView('scenario')" class="action-card p-8 rounded-xl cursor-pointer border-red-500/30">
+                            <h3 class="heading-font text-xl mb-1 text-red-400">Start Adventure</h3>
+                            <p class="text-[10px] opacity-60 uppercase">Scenarios & Feats</p>
+                        </div>
+                        <div onclick="setView('scoreboard')" class="action-card p-8 rounded-xl cursor-pointer border-emerald-500/30">
+                            <h3 class="heading-font text-xl mb-1 text-emerald-400">Scoreboard</h3>
+                            <p class="text-[10px] opacity-60 uppercase">MP & AP Tracker</p>
+                        </div>
+                        <div onclick="setView('summary')" class="action-card p-8 rounded-xl cursor-pointer border-blue-500/30">
+                            <h3 class="heading-font text-xl mb-1 text-blue-400">Turn Summary</h3>
+                            <p class="text-[10px] opacity-60 uppercase">Round Structure</p>
+                        </div>
+                        <div onclick="setView('tests')" class="action-card p-8 rounded-xl cursor-pointer border-blue-500/30">
+                            <h3 class="heading-font text-xl mb-1 text-blue-400">Test Summary</h3>
+                            <p class="text-[10px] opacity-60 uppercase">Round Structure</p>
+                        </div>
+                          <div onclick="setView('actions')" class="action-card p-8 rounded-xl cursor-pointer border-blue-500/30">
+                            <h3 class="heading-font text-xl mb-1 text-blue-400">Actions</h3>
+                            <p class="text-[10px] opacity-60 uppercase">Round Structure</p>
+                        </div>
+                            <div onclick="setView('magic')" class="action-card p-8 rounded-xl cursor-pointer border-blue-500/30">
+                            <h3 class="heading-font text-xl mb-1 text-blue-400">Magic</h3>
+                            <p class="text-[10px] opacity-60 uppercase">Round Structure</p>
+                        </div>
+                           <div onclick="setView('states')" class="action-card p-8 rounded-xl cursor-pointer border-blue-500/30">
+                            <h3 class="heading-font text-xl mb-1 text-blue-400">States</h3>
+                            <p class="text-[10px] opacity-60 uppercase">Round Structure</p>
+                        </div>
+                        <div onclick="setView('keywords')" class="action-card p-8 rounded-xl cursor-pointer border-blue-500/30">
+                            <h3 class="heading-font text-xl mb-1 text-blue-400">Keywords</h3>
+                            <p class="text-[10px] opacity-60 uppercase">Round Structure</p>
+                        </div>
+                        <div onclick="setView('Abilities')" class="action-card p-8 rounded-xl cursor-pointer border-blue-500/30">
+                            <h3 class="heading-font text-xl mb-1 text-blue-400">Abilities</h3>
+                            <p class="text-[10px] opacity-60 uppercase">Round Structure</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderScoreboard() {
+            const scenario = data.scenario[0].items.find(i => i.id === selectedScenario);
+            const feat = data.scenario[1].items.find(i => i.id === selectedFeat);
+
+            mainContent.innerHTML = `
+                <div class="fade-in">
+                    <div class="mb-12 text-center bg-white/5 p-8 rounded-2xl border border-white/10">
+                        <h2 class="heading-font gold-text text-3xl mb-4 uppercase tracking-[0.2em]">Active Adventure</h2>
+                        <div class="flex flex-col md:flex-row justify-center gap-8 text-sm">
+                            <div class="p-4 bg-black/30 rounded border border-white/5 flex-1">
+                                <p class="text-[10px] uppercase opacity-40 mb-1">Scenario</p>
+                                <p class="heading-font text-lg text-white font-bold">${scenario ? scenario.name : 'None Selected'}</p>
+                            </div>
+                            <div class="p-4 bg-black/30 rounded border border-white/5 flex-1">
+                                <p class="text-[10px] uppercase opacity-40 mb-1">Feat</p>
+                                <p class="heading-font text-lg text-white font-bold">${feat ? feat.name : 'None Selected'}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        ${[1, 2].map(p => {
+                            const military = scoreState[`p${p}`].military;
+                            const arcane = scoreState[`p${p}`].arcane;
+                            const victoryTotal = military + arcane;
+
+                            return `
+                                <div class="action-card rounded-2xl p-8">
+                                    <h3 class="heading-font text-2xl gold-text text-center mb-8 pb-4 border-b border-white/10">Player ${p}</h3>
+                                    
+                                    <div class="space-y-12">
+                                        <div class="text-center">
+                                            <p class="text-[10px] uppercase tracking-widest text-red-400 mb-4 font-bold">Military Points (MP)</p>
+                                            <div class="flex items-center justify-center gap-8">
+                                                <button onclick="updateScore('p${p}', 'military', -1)" class="counter-btn">-</button>
+                                                <span class="text-6xl font-bold text-white tabular-nums">${military}</span>
+                                                <button onclick="updateScore('p${p}', 'military', 1)" class="counter-btn">+</button>
+                                            </div>
+                                        </div>
+
+                                        <div class="text-center">
+                                            <p class="text-[10px] uppercase tracking-widest text-purple-400 mb-4 font-bold">Arcane Points (AP)</p>
+                                            <div class="flex items-center justify-center gap-8">
+                                                <button onclick="updateScore('p${p}', 'arcane', -1)" class="counter-btn border-purple-900/40">-</button>
+                                                <span class="text-4xl font-bold text-purple-200 tabular-nums">${arcane}</span>
+                                                <button onclick="updateScore('p${p}', 'arcane', 1)" class="counter-btn border-purple-900/40">+</button>
+                                            </div>
+                                        </div>
+
+                                        <div class="mt-8 pt-8 border-t border-white/10 text-center">
+                                            <p class="text-[10px] uppercase tracking-widest text-slate-500 mb-2 font-bold">Total Victory Points</p>
+                                            <div class="text-4xl heading-font gold-text font-bold">
+                                                ${victoryTotal}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+
+                    <div class="mt-16 flex flex-col items-center gap-6">
+                        <button onclick="resetAll()" class="btn-danger w-full max-w-xs">
+                            End Adventure
+                        </button>
+                        <button onclick="resetOnlyScores()" class="text-[10px] uppercase tracking-widest opacity-40 hover:opacity-100 transition-opacity underline">Reset Scores Only</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function resetAll() {
+            selectedScenario = null;
+            selectedFeat = null;
+            scoreState = {
+                p1: { military: 0, arcane: 0 },
+                p2: { military: 0, arcane: 0 }
+            };
+            setView('scenario');
+        }
+
+        function resetOnlyScores() {
+            scoreState = {
+                p1: { military: 0, arcane: 0 },
+                p2: { military: 0, arcane: 0 }
+            };
+            if (currentView === 'scoreboard') renderScoreboard();
+        }
+
+        function selectItem(type, id) {
+            if (type === 'Scenarios') selectedScenario = id;
+            if (type === 'Feats') selectedFeat = id;
+            renderScenarioSelection();
+        }
+
+        function renderScenarioSelection() {
+            mainContent.innerHTML = '<div class="fade-in"></div>';
+            const wrapper = mainContent.firstChild;
+
+            const globalActions = document.createElement('div');
+            globalActions.className = "flex justify-center mb-8";
+            globalActions.innerHTML = `
+                <button onclick="startRandomAdventure()" class="btn-outline">
+                    Random Adventure
+                </button>
+            `;
+            wrapper.appendChild(globalActions);
+
+            data.scenario.forEach(cat => {
+                const section = document.createElement('div');
+                section.className = "mb-12";
+                section.innerHTML = `
+                    <div class="category-header mb-6">
+                        <h2 class="heading-font gold-text text-xl uppercase tracking-widest">${cat.category}</h2>
+                    </div>
+                `;
+
+                const tableWrapper = document.createElement('div');
+                tableWrapper.className = "action-card rounded-xl overflow-hidden";
+                
+                let rowsHtml = cat.items.map(item => {
+                    const isSelected = (cat.category === 'Scenarios' && selectedScenario === item.id) || 
+                                     (cat.category === 'Feats' && selectedFeat === item.id);
+                    
+                    return `
+                        <tr class="transition-colors cursor-pointer ${isSelected ? 'selected-row' : 'hover:bg-white/5'}" 
+                            onclick="selectItem('${cat.category}', '${item.id}')">
+                            <td class="p-4 w-12 text-center">
+                                <input type="radio" name="${cat.category}" class="scenario-radio" ${isSelected ? 'checked' : ''}>
+                            </td>
+                            <td class="p-4">
+                                <div class="font-bold text-white text-base heading-font">${item.name}</div>
+                                <div class="text-xs text-slate-400">${item.desc}</div>
+                                ${isSelected ? `
+                                    <div class="mt-4 pt-4 border-t border-white/10 animate-fade-in">
+                                        ${item.image ? `<img src="${item.image}" alt="${item.name} Map" class="map-image mb-4">` : ''}
+                                        <ul class="step-list">${item.steps.map(s => `<li class="step-item text-[11px]">${s}</li>`).join('')}</ul>
+                                    </div>
+                                ` : ''}
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+
+                tableWrapper.innerHTML = `<table class="w-full text-left"><tbody>${rowsHtml}</tbody></table>`;
+                section.appendChild(tableWrapper);
+                wrapper.appendChild(section);
+            });
+
+            if (selectedScenario && selectedFeat) {
+                const btnContainer = document.createElement('div');
+                btnContainer.className = "mt-12 mb-24 text-center";
+                btnContainer.innerHTML = `
+                    <button onclick="setView('scoreboard')" class="btn-gold px-12 py-4 text-xl">
+                        Begin Adventure
+                    </button>
+                `;
+                wrapper.appendChild(btnContainer);
+            }
+        }
+
+        function renderList(type, query = '') {
+            if (type === 'scenario') return renderScenarioSelection();
+            if (type === 'scoreboard') return renderScoreboard();
+
+            const listData = data[type];
+            mainContent.innerHTML = '<div class="fade-in"></div>';
+            const wrapper = mainContent.firstChild;
+
+            listData.forEach(cat => {
+                const filteredItems = cat.items.filter(item => 
+                    item.name.toLowerCase().includes(query) || 
+                    (item.desc && item.desc.toLowerCase().includes(query))
+                );
+
+                if (filteredItems.length === 0) return;
+
+                const section = document.createElement('div');
+                section.innerHTML = `<div class="category-header mt-8"><h2 class="heading-font gold-text text-lg uppercase tracking-widest">${cat.category}</h2></div>`;
+                const grid = document.createElement('div');
+                grid.className = 'grid grid-cols-1 gap-4 mb-8';
+                
+                filteredItems.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'action-card rounded-lg';
+                    card.innerHTML = `
+                        <details class="w-full">
+                            <summary class="p-5">
+                                <div class="flex justify-between items-center w-full">
+                                    <h3 class="font-bold text-white text-lg">${item.name}</h3>
+                                    <svg class="chevron w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                </div>
+                            </summary>
+                            <div class="px-5 pb-5">
+                                <p class="text-sm text-slate-400 mb-4">${item.desc}</p>
+                                ${item.image ? `<img src="${item.image}" alt="${item.name} Map" class="map-image mb-4">` : ''}
+                                ${item.steps ? `<ul class="step-list">${item.steps.map(s => `<li class="step-item">${s}</li>`).join('')}</ul>` : ''}
+                            </div>
+                        </details>
+                    `;
+                    grid.appendChild(card);
+                });
+                section.appendChild(grid);
+                wrapper.appendChild(section);
+            });
+        }
+
+        function render() {
+            const query = searchInput.value.trim().toLowerCase();
+            if (currentView === 'home') renderHome();
+            else if (currentView === 'scoreboard') renderScoreboard();
+            else renderList(currentView, query);
+        }
+
+        searchInput.addEventListener('input', () => {
+            if (currentView === 'home' && searchInput.value.length > 0) setView('actions');
+            else render();
+        });
+
+        // Initialize
+        render();
+    </script>
+</body>
+</html>
