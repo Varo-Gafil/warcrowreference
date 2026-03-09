@@ -15,6 +15,7 @@
             --warcrow-border: #2d343f;
             --warcrow-red: #8b1e1e;
             --warcrow-purple: #4a1d6e;
+            --header-height: 80px; 
         }
 
         body {
@@ -25,11 +26,104 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            padding-top: var(--header-height);
         }
 
         .heading-font { font-family: 'Cinzel', serif; }
         .gold-text { color: var(--warcrow-gold); }
         
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: var(--header-height);
+            z-index: 50;
+            background-color: #0a0c10;
+            border-bottom: 1px solid #2d343f;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Side Navigation Menu */
+        #sideNav {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 300px;
+            height: 100vh;
+            background: #0d1016;
+            z-index: 100;
+            transition: right 0.3s ease-in-out;
+            border-left: 1px solid var(--warcrow-border);
+            box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+        }
+
+        #sideNav.open {
+            right: 0;
+        }
+
+        .nav-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(4px);
+            z-index: 90;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .nav-overlay.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .side-nav-link {
+            padding: 1.25rem 2rem;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #94a3b8;
+        }
+
+        .side-nav-link:hover {
+            background: rgba(197, 160, 89, 0.05);
+            color: var(--warcrow-gold);
+        }
+
+        .side-nav-link.active {
+            color: var(--warcrow-gold);
+            border-left: 4px solid var(--warcrow-gold);
+            background: rgba(197, 160, 89, 0.08);
+        }
+
+        /* Hamburger Animation */
+        .menu-btn {
+            position: relative;
+            width: 30px;
+            height: 20px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .menu-btn span {
+            display: block;
+            width: 100%;
+            height: 2px;
+            background-color: var(--warcrow-gold);
+            transition: all 0.3s ease;
+        }
+
         .action-card {
             background-color: var(--warcrow-card);
             border: 1px solid var(--warcrow-border);
@@ -50,24 +144,6 @@
         details[open] summary {
             border-bottom: 1px solid rgba(255,255,255,0.05);
             padding-bottom: 1rem;
-        }
-
-        .nav-link {
-            position: relative;
-            cursor: pointer;
-            transition: color 0.3s ease;
-            white-space: nowrap;
-        }
-
-        .nav-link.active { color: var(--warcrow-gold); }
-        .nav-link.active::after {
-            content: '';
-            position: absolute;
-            bottom: -4px;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background: var(--warcrow-gold);
         }
 
         .category-header {
@@ -219,31 +295,55 @@
             border-radius: 8px;
             margin-top: 1rem;
         }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
 <body class="min-h-screen">
 
-    <header class="sticky top-0 z-50 bg-[#0a0c10] border-b border-[#2d343f] py-4 px-6 shadow-xl">
-        <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
-            <div class="flex items-center gap-4">
-                <div onclick="setView('home')" class="cursor-pointer">
-                    <h1 class="heading-font text-2xl font-bold tracking-widest gold-text">WARCROW</h1>
-                    <p class="text-[10px] uppercase tracking-[0.2em] opacity-60">Rulebook 1.5.1 Reference</p>
-                </div>
+    <!-- Overlay -->
+    <div id="navOverlay" class="nav-overlay" onclick="toggleNav()"></div>
+
+    <!-- Side Navigation -->
+    <aside id="sideNav">
+        <div class="p-8 border-b border-white/5 flex justify-between items-center">
+            <h2 class="heading-font gold-text text-xl tracking-widest">MENU</h2>
+            <button onclick="toggleNav()" class="text-slate-500 hover:text-white transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+        <nav class="flex-1 overflow-y-auto no-scrollbar py-4">
+            <div onclick="setView('home')" id="side-nav-home" class="side-nav-link active">Home</div>
+            <div onclick="setView('scenario')" id="side-nav-scenario" class="side-nav-link">Scenario</div>
+            <div onclick="setView('scoreboard')" id="side-nav-scoreboard" class="side-nav-link">Scoreboard</div>
+            <div onclick="setView('summary')" id="side-nav-summary" class="side-nav-link">Turn Summary</div>
+            <div onclick="setView('tests')" id="side-nav-tests" class="side-nav-link">Test Summary</div>
+            <div onclick="setView('actions')" id="side-nav-actions" class="side-nav-link">Actions</div>
+            <div onclick="setView('magic')" id="side-nav-magic" class="side-nav-link">Magic</div>
+            <div onclick="setView('states')" id="side-nav-states" class="side-nav-link">States</div>
+            <div onclick="setView('keywords')" id="side-nav-keywords" class="side-nav-link">Keywords</div>
+        </nav>
+        <div class="p-6 bg-black/20 text-[10px] text-slate-600 uppercase tracking-widest text-center">
+            Warcrow Reference v1.5.1
+        </div>
+    </aside>
+
+    <header class="px-6">
+        <div class="max-w-6xl mx-auto w-full flex items-center justify-between">
+            <div onclick="setView('home')" class="cursor-pointer">
+                <h1 class="heading-font text-2xl font-bold tracking-widest gold-text leading-tight">WARCROW</h1>
+                <p class="text-[10px] uppercase tracking-[0.2em] opacity-60">Companion</p>
             </div>
             
-            <nav class="flex gap-4 md:gap-6 text-[10px] md:text-xs font-semibold uppercase tracking-widest overflow-x-auto pb-4 md:pb-2 w-full md:w-auto">
-                <span onclick="setView('home')" id="nav-home" class="nav-link active">Home</span>
-                <span onclick="setView('scenario')" id="nav-scenario" class="nav-link">Scenario</span>
-                <span onclick="setView('scoreboard')" id="nav-scoreboard" class="nav-link">Scoreboard</span>
-                <span onclick="setView('summary')" id="nav-summary" class="nav-link">Turn Summary</span>
-                <span onclick="setView('tests')" id="nav-tests" class="nav-link">Test Summary</span>
-                <span onclick="setView('actions')" id="nav-actions" class="nav-link">Actions</span>
-                <span onclick="setView('magic')" id="nav-magic" class="nav-link">Magic</span>
-                <span onclick="setView('states')" id="nav-states" class="nav-link">States</span>
-                <span onclick="setView('keywords')" id="nav-keywords" class="nav-link">Keywords</span>
-                <span onclick="setView('abilities')" id="nav-abilities" class="nav-link">Abilities</span>
-            </nav>
+            <button onclick="toggleNav()" class="flex items-center gap-3 group">
+                <span class="text-[10px] uppercase tracking-widest text-slate-500 font-bold group-hover:text-white transition-colors">Navigation</span>
+                <div class="menu-btn">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </button>
         </div>
     </header>
 
@@ -282,28 +382,107 @@
                             id: "s1", 
                             name: "Take Position", 
                             desc: "Control vital strategic points on the map.", 
-                            image: "TakePositions.png",
-                            steps: [
-                                "Place 3 objective markers along the center line.", 
-                                "Score VP at the end of each round for each marker controlled.", 
-                                "A unit controls a marker if it has the most models within 2 strides."
-                            ] 
+                            required: ["bullet point one", "bullet point two"],
+                            rounds: ["bullet point one"],
+                            scoring: ["bullet point one", "bullet point two"],
+                            endGame: "text",
+                            image: "TakePositions.png"
                         },
-                        { id: "s2", name: "Influence Zones", desc: "Exert pressure across the sectors of the battlefield.", steps: ["Divide the board into 6 equal zones.", "Score VP based on having more models in a zone than the opponent.", "Characters count as 2 models for influence purposes."] },
-                        { id: "s3", name: "Expanse", desc: "Push into enemy territory while holding your ground.", steps: ["Score VP for units in the opponent's deployment zone.", "Bonus VP for maintaining a unit in your own deployment zone.", "Mobile units are key for this wide-front engagement."] },
-                        { id: "s4", name: "Loot", desc: "Recover precious resources from the fog.", steps: ["Place 5 loot tokens scattered across the center.", "Interact action (1 AP) to pick up a token.", "Units drop tokens if they are destroyed or gain certain states."] },
-                        { id: "s5", name: "Consolidated Progress", desc: "Maintain a steady advance across the field.", steps: ["Score VP for units that end their activation closer to the enemy edge than they started.", "Reset scoring if units retreat.", "Favors steady, disciplined advancements."] },
-                        { id: "s6", name: "Quadrants", desc: "Dominate the four corners of the battlefield.", steps: ["Score VP for each quadrant controlled.", "Control requires a unit with at least 50% HP remaining.", "Contested quadrants grant no points."] }
+                        { 
+                            id: "s2", 
+                            name: "Influence Zones", 
+                            desc: "Exert pressure across the sectors of the battlefield.",
+                            required: ["bullet point one", "bullet point two"],
+                            rounds: ["bullet point one"],
+                            scoring: ["bullet point one", "bullet point two"],
+                            endGame: "text",
+                            image: "InfluenceZones.png"
+                        },
+                        { 
+                            id: "s3", 
+                            name: "Expanse", 
+                            desc: "Push into enemy territory while holding your ground.",
+                            required: ["bullet point one", "bullet point two"],
+                            rounds: ["bullet point one"],
+                            scoring: ["bullet point one", "bullet point two"],
+                            endGame: "text",
+                            image: "Expanse.png"
+                        },
+                        { 
+                            id: "s4",
+                            name: "Loot", 
+                            desc: "Recover precious resources from the fog.",
+                            required: ["bullet point one", "bullet point two"],
+                            rounds: ["bullet point one"],
+                            scoring: ["bullet point one", "bullet point two"],
+                            endGame: "text",
+                            image: "Loot.png"
+                        },
+                        { 
+                            id: "s5", 
+                            name: "Consolidated Progress", 
+                            desc: "Maintain a steady advance across the field.",
+                            required: ["bullet point one", "bullet point two"],
+                            rounds: ["bullet point one"],
+                            scoring: ["bullet point one", "bullet point two"],
+                            endGame: "text",
+                            image: "ConsolidatedProgress.png"
+                        },
+                        { 
+                            id: "s6", 
+                            name: "Quadrants", 
+                            desc: "Dominate the four corners of the battlefield.",
+                            required: ["bullet point one", "bullet point two"],
+                            rounds: ["bullet point one"],
+                            scoring: ["bullet point one", "bullet point two"],
+                            endGame: "text",
+                            image: "Quadrants.png"
+                        },
                     ]
                 },
                 {
                     category: "Feats",
                     items: [
-                        { id: "f1", name: "Track", desc: "Mark and hunt down specific enemy assets.", steps: ["Secretly choose an enemy unit at the start of the game.", "Score VP if that unit is destroyed or reduced to 1 HP by the end."] },
-                        { id: "f2", name: "Decapitation", desc: "Target the enemy leadership directly.", steps: ["Score VP for destroying the enemy Leader.", "Bonus VP if your own Leader is the one who deals the final blow."] },
-                        { id: "f3", name: "Rifts", desc: "Interact with the Lindwurm's unstable energies.", steps: ["Score VP for closing magical rifts or standing near them during the end phase.", "Risk Tinge damage when near active rifts."] },
-                        { id: "f4", name: "Banners", desc: "Display your colors and demoralize the foe.", steps: ["One unit per player carries a banner.", "Score VP each round the banner is within the center 12 inches and the carrier is not Engaged."] },
-                        { id: "f5", name: "Resources", desc: "Secure supplies to sustain the war effort.", steps: ["Occupy specific supply caches.", "Score VP at the end of the game based on total caches held."] }
+                        { 
+                            id: "f1", 
+                            name: "Track", 
+                            required: ["bullet point one", "bullet point two"],
+                            description: ["bullet point one"],
+                            scoring: ["bullet point one", "bullet point two"],
+                            endGame: "text" 
+                        },
+                        { 
+                            id: "f2", 
+                            name: "Decapitation", 
+                            required: ["bullet point one", "bullet point two"],
+                            description: ["bullet point one"],
+                            scoring: ["bullet point one", "bullet point two"],
+                            endGame: "text" 
+                        },
+                        { 
+                            id: "f3", 
+                            name: "Rifts", 
+                            required: ["bullet point one", "bullet point two"],
+                            description: ["bullet point one"],
+                            scoring: ["bullet point one", "bullet point two"],
+                            endGame: "text" 
+                        },
+                        { 
+                            id: "f4", 
+                            name: "Banners", 
+                            required: ["bullet point one", "bullet point two"],
+                            description: ["bullet point one"],
+                            scoring: ["bullet point one", "bullet point two"],
+                            endGame: "text" 
+                        },
+                        { 
+                            id: "f5", 
+                            name: "Resources", 
+                            required: ["bullet point one", "bullet point two"],
+                            description: ["bullet point one"],
+                            scoring: ["bullet point one", "bullet point two"],
+                            endGame: "text" 
+                        } 
                     ]
                 }
             ],
@@ -366,12 +545,25 @@
 
         const mainContent = document.getElementById('mainContent');
         const searchInput = document.getElementById('searchInput');
+        const sideNav = document.getElementById('sideNav');
+        const navOverlay = document.getElementById('navOverlay');
+
+        function toggleNav() {
+            sideNav.classList.toggle('open');
+            navOverlay.classList.toggle('visible');
+        }
 
         function setView(view) {
             currentView = view;
-            document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
-            const activeNav = document.getElementById(`nav-${view}`);
+            
+            // Close nav if open
+            if (sideNav.classList.contains('open')) toggleNav();
+
+            // Update active state in side nav
+            document.querySelectorAll('.side-nav-link').forEach(el => el.classList.remove('active'));
+            const activeNav = document.getElementById(`side-nav-${view}`);
             if (activeNav) activeNav.classList.add('active');
+
             render();
             window.scrollTo(0, 0);
         }
@@ -529,22 +721,22 @@
             renderScenarioSelection();
         }
 
-        function renderScenarioSelection() {
+                function renderScenarioSelection() {
             mainContent.innerHTML = '<div class="fade-in"></div>';
             const wrapper = mainContent.firstChild;
 
             const globalActions = document.createElement('div');
             globalActions.className = "flex justify-center mb-8";
-            globalActions.innerHTML = `
-                <button onclick="startRandomAdventure()" class="btn-outline">
-                    Random Adventure
-                </button>
-            `;
+            globalActions.innerHTML = `<button onclick="startRandomAdventure()" class="btn-outline">Random Adventure</button>`;
             wrapper.appendChild(globalActions);
+
+            const gridContainer = document.createElement('div');
+            gridContainer.className = "grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12";
+            wrapper.appendChild(gridContainer);
 
             data.scenario.forEach(cat => {
                 const section = document.createElement('div');
-                section.className = "mb-12";
+                section.className = "flex flex-col h-full";
                 section.innerHTML = `
                     <div class="category-header mb-6">
                         <h2 class="heading-font gold-text text-xl uppercase tracking-widest">${cat.category}</h2>
@@ -558,21 +750,60 @@
                     const isSelected = (cat.category === 'Scenarios' && selectedScenario === item.id) || 
                                      (cat.category === 'Feats' && selectedFeat === item.id);
                     
+                    let itemContent = '';
+                    if (isSelected) {
+                        if (cat.category === 'Scenarios') {
+                            itemContent = `
+                                <div class="mt-4 pt-4 border-t border-white/10 animate-fade-in space-y-4">
+                                    ${item.image ? `<img src="${item.image}" alt="${item.name} Map" class="map-image mb-4">` : ''}
+                                    <div>
+                                        <p class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1">Required Materials</p>
+                                        <ul class="step-list">${item.required.map(s => `<li class="step-item text-[11px]">${s}</li>`).join('')}</ul>
+                                    </div>
+                                    <div>
+                                        <p class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1">Rounds</p>
+                                        <ul class="step-list">${item.rounds.map(s => `<li class="step-item text-[11px]">${s}</li>`).join('')}</ul>
+                                    </div>
+                                    <div>
+                                        <p class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1">Scoring</p>
+                                        <ul class="step-list">${item.scoring.map(s => `<li class="step-item text-[11px]">${s}</li>`).join('')}</ul>
+                                    </div>
+                                    <div>
+                                        <p class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1">End of the Game</p>
+                                        <p class="text-[11px] text-slate-400">${item.endGame}</p>
+                                    </div>
+                                </div>
+                            `;
+                        } else {
+                            itemContent = `
+                               <div class="mt-4 pt-4 border-t border-white/10 animate-fade-in space-y-4">
+                                    <div>
+                                        <p class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1">Required Materials</p>
+                                        <ul class="step-list">${item.required.map(s => `<li class="step-item text-[11px]">${s}</li>`).join('')}</ul>
+                                    </div>
+                                    <div>
+                                        <p class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1">Description</p>
+                                        <ul class="step-list">${item.description.map(s => `<li class="step-item text-[11px]">${s}</li>`).join('')}</ul>
+                                    </div>
+                                    <div>
+                                        <p class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1">Scoring</p>
+                                        <ul class="step-list">${item.scoring.map(s => `<li class="step-item text-[11px]">${s}</li>`).join('')}</ul>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                    }
+                    
                     return `
                         <tr class="transition-colors cursor-pointer ${isSelected ? 'selected-row' : 'hover:bg-white/5'}" 
                             onclick="selectItem('${cat.category}', '${item.id}')">
-                            <td class="p-4 w-12 text-center">
+                            <td class="p-4 w-12 text-center align-top">
                                 <input type="radio" name="${cat.category}" class="scenario-radio" ${isSelected ? 'checked' : ''}>
                             </td>
                             <td class="p-4">
                                 <div class="font-bold text-white text-base heading-font">${item.name}</div>
                                 <div class="text-xs text-slate-400">${item.desc}</div>
-                                ${isSelected ? `
-                                    <div class="mt-4 pt-4 border-t border-white/10 animate-fade-in">
-                                        ${item.image ? `<img src="${item.image}" alt="${item.name} Map" class="map-image mb-4">` : ''}
-                                        <ul class="step-list">${item.steps.map(s => `<li class="step-item text-[11px]">${s}</li>`).join('')}</ul>
-                                    </div>
-                                ` : ''}
+                                ${itemContent}
                             </td>
                         </tr>
                     `;
@@ -580,17 +811,13 @@
 
                 tableWrapper.innerHTML = `<table class="w-full text-left"><tbody>${rowsHtml}</tbody></table>`;
                 section.appendChild(tableWrapper);
-                wrapper.appendChild(section);
+                gridContainer.appendChild(section);
             });
 
             if (selectedScenario && selectedFeat) {
                 const btnContainer = document.createElement('div');
                 btnContainer.className = "mt-12 mb-24 text-center";
-                btnContainer.innerHTML = `
-                    <button onclick="setView('scoreboard')" class="btn-gold px-12 py-4 text-xl">
-                        Begin Adventure
-                    </button>
-                `;
+                btnContainer.innerHTML = `<button onclick="setView('scoreboard')" class="btn-gold px-12 py-4 text-xl">View Scoreboard</button>`;
                 wrapper.appendChild(btnContainer);
             }
         }
@@ -629,7 +856,6 @@
                             </summary>
                             <div class="px-5 pb-5">
                                 <p class="text-sm text-slate-400 mb-4">${item.desc}</p>
-                                ${item.image ? `<img src="${item.image}" alt="${item.name} Map" class="map-image mb-4">` : ''}
                                 ${item.steps ? `<ul class="step-list">${item.steps.map(s => `<li class="step-item">${s}</li>`).join('')}</ul>` : ''}
                             </div>
                         </details>
