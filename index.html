@@ -294,6 +294,24 @@
             margin-top: 1rem;
         }
 
+        /* Terrain Table Styling */
+        .terrain-table th {
+            border-bottom: 2px solid var(--warcrow-gold);
+            color: var(--warcrow-gold);
+            font-family: 'Cinzel', serif;
+            padding: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        .terrain-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--warcrow-border);
+            color: #cbd5e1;
+        }
+        .terrain-table tr:hover {
+            background: rgba(255,255,255,0.03);
+        }
+
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
@@ -321,6 +339,7 @@
             <div onclick="setView('magic')" id="side-nav-magic" class="side-nav-link">Magic</div>
             <div onclick="setView('states')" id="side-nav-states" class="side-nav-link">States</div>
             <div onclick="setView('keywords')" id="side-nav-keywords" class="side-nav-link">Keywords</div>
+            <div onclick="setView('terrain')" id="side-nav-terrain" class="side-nav-link">Terrain</div>
         </nav>
         <div class="p-6 bg-black/20 text-[10px] text-slate-600 uppercase tracking-widest text-center">
             Warcrow Reference v1.5.1
@@ -349,14 +368,22 @@
 
     <!-- Search Footer -->
     <footer class="fixed bottom-0 left-0 right-0 p-4 md:p-6 z-40 bg-[#0a0c10]/95 backdrop-blur-md">
-        <div class="max-w-2xl mx-auto flex flex-col md:flex-row items-center gap-4">
-            <div class="relative w-full">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <svg class="h-4 w-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+        <div class="max-w-2xl mx-auto">
+            <div class="flex flex-col md:flex-row items-center gap-4 mb-3">
+                <div class="relative w-full">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-4 w-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </div>
+                    <input type="text" id="searchInput" placeholder="Search rules, keywords, or actions..." class="bg-white/5 border border-[#2d343f] w-full py-3 pl-10 pr-4 rounded-lg text-sm text-white focus:outline-none focus:border-[#c5a059] transition-all shadow-2xl">
                 </div>
-                <input type="text" id="searchInput" placeholder="Search rules, keywords, or actions..." class="bg-white/5 border border-[#2d343f] w-full py-3 pl-10 pr-4 rounded-lg text-sm text-white focus:outline-none focus:border-[#c5a059] transition-all shadow-2xl">
+                <p class="hidden md:block text-[9px] uppercase tracking-widest text-slate-500 font-bold whitespace-nowrap">Press <span class="text-slate-300">/</span> to search</p>
             </div>
-            <p class="hidden md:block text-[9px] uppercase tracking-widest text-slate-500 font-bold whitespace-nowrap">Press <span class="text-slate-300">/</span> to search</p>
+            <div class="text-center">
+                <p class="text-[9px] text-slate-500 uppercase tracking-widest leading-relaxed">
+                    Warcrow is a &copy; Corvus Belli game. All rights reserved.<br>
+                    Warcrow Companion is an unofficial fan-made application.
+                </p>
+            </div>
         </div>
     </footer>
 
@@ -372,6 +399,19 @@
         };
 
         const data = {
+            terrain: [
+                { name: "Clear", keywords: "None", size: "0" },
+                { name: "Forest", keywords: "Difficult, Cover", size: "1" },
+                { name: "Low Wall", keywords: "Cover, Obstacle", size: "0.5" },
+                { name: "High Wall", keywords: "Blocking, Obstacle", size: "2" },
+                { name: "Hill", keywords: "Elevated", size: "1" },
+                { name: "Deep Water", keywords: "Impassable", size: "0" },
+                { name: "Shallow Water", keywords: "Difficult", size: "0" },
+                { name: "Ruin", keywords: "Cover, Difficult", size: "1.5" },
+                { name: "Dense Smoke", keywords: "Blocking LoS", size: "2" },
+                { name: "Building", keywords: "Blocking, Impassable", size: "3" },
+                { name: "Barricade", keywords: "Cover, Difficult", size: "1" }
+            ],
             scenario: [
                 {
                     category: "Scenarios",
@@ -451,46 +491,71 @@
                             id: "f1", 
                             name: "Track",
                             desc: "",
-                            required: ["bullet point one", "bullet point two"],
-                            description: ["bullet point one"],
-                            scoring: ["bullet point one", "bullet point two"],
-                            endGame: "text" 
+                            required: ["4 event tokens, numbered from 1 to 4."],
+                            preplabel: "Preparation",
+                            prep:["The company that wins the initiative receives event tokens 1 and 3, the rival company receives event tokens 2 and 4.","Each company places one of their event tokens on the “1” position of the turn counter (track meter).","After deploying all units in the game preparation phase (including Scouts), each company, in deployment order, places their remaining event token on any point of the battlefield farther than 10 strides away from their deployment zone (vestige)."],
+                            ruleslabel:"Tracking Vestiges",
+                            rules: ["Event tokens on the turn counter represent each company’s track meter.","Event tokens on the battlefield represent vestiges.","Units may move through vestiges, but cannot finish their movement or be placed on them.","Each company has their own track meter and own vestiges. Companies cannot interact with the rival’s vestiges."],
+                            actionlabel: "Tracking a Vestige",
+                            actions: ["Character units and units with a joined Character that finish their activation adjacent to their company’s vestige can track it:","The unit makes a WP test.","Scout and Ambusher units add <img src='ODice.png' style= 'width:20px; display:inline; vertical-align:middle;'/> to their roll.","During the switches step of the roll, units may suffer 1 stress to add 1 <img src='Success.png' style= 'width:20px; display:inline; vertical-align:middle;'/> to their roll.","When a unit passes the test with 2<img src='Success.png' style= 'width:20px; display:inline; vertical-align:middle;'/>, the company advances the track meter by 1 position on the turn counter. Then, the rival company must place the vestige at 15 strides of its current position (it cannot be placed on Impassable terrain)."],
+                            scoring: ["When a company advances their track meter to position “4” of the turn counter it obtains 4 AP and the rival company obtains as many AP as its current position on the track meter minus 1. From this moment on, units can no longer track vestiges.","At the end of the game, if neither company got their track meter to position “4”.Each company obtains as many AP as the current position of their track meter."],
+                        
                         },
                         { 
                             id: "f2", 
                             name: "Decapitation",
                             desc: "",
-                            required: ["bullet point one", "bullet point two"],
-                            description: ["bullet point one"],
-                            scoring: ["bullet point one", "bullet point two"],
-                            endGame: "text" 
+                            required: ["2 Event Tokens"],
+                            preplabel:"Commander",
+                            prep:["Companies must deploy their commander during the deployment phase (they cannot use Scout or Ambusher).","If the commander is removed from the battlefield by any effect it will be considered eliminated (for scoring purposes)","The commander cannot join any unit."],
+                            ruleslabel: "Contract",
+                            rules: ["After deploying all units in the game preparationphase (including Scouts), each company, in deployment order, chooses a unit from the rival company as their contract (place an event token on their profile card)."],
+                            actionlabel:"",
+                            actions:["The contract cannot be the commander","If the contract is removed from the battlefield by any effect it will be considered eliminated (for scoring purposes).","If the unit with the contract has a joined Character, the contract will be considered eliminated once the unit is destroyed, even if the Character survives.","A company that couldn’t choose its contract (because there were no deployed enemy units) will do so at the end of the round. A demoralized unit cannot be chosen as a contract. If a company still can’t choose its contract at the end of a round, it will do so at the end of the next one."],
+                            scoring: ["2 AP if they eliminated the rival's commander","1 AP if their commander hasn't been eliminated","1 AP if they eliminated their contract"],
+                           
                         },
                         { 
                             id: "f3", 
-                            name: "Rifts",
+                            name: "The Rift",
                             desc: "",
-                            required: ["bullet point one", "bullet point two"],
-                            description: ["bullet point one"],
-                            scoring: ["bullet point one", "bullet point two"],
-                            endGame: "text" 
+                            required: ["2 fog markers", "2 event tokens"],
+                            preplabel:"Fog",
+                            prep:["After deploying all units in the preparation phase (including Scouts), each company, in deployment order, must place a fog marker further than 20 strides from their deployment zone.","These fog markers apply the fog rules (terrain element) and are Immovable.","Character units and units with a joined Character that finish their activation adjacent to one of the event fog markers may begin sealing the rift."],
+                            ruleslabel: "Sealing the Rift",
+                            rules: ["The unit performs a WP test, using the Character’s WP.The company places an event token on the turn counter, 6 positions ahead of the current turn, and then moves it back 1 position for each 1 <img src='Success.png' style= 'width:20px; display:inline; vertical-align:middle;'/> they got in the test.","Spellcaster Characters add <img src='ODice.png' style= 'width:20px; display:inline; vertical-align:middle;'/> to their roll."],
+                            actionlabel:"Remove the event token if:",
+                            actions:["The unit is no longer adjacent to the fog marker.","The unit activates.","The Character is taken out of combat.","The Character leaves the unit.","A unit cannot begin sealing a rift that is already being sealed by another unit.","When the event token is activated, the company sealing the rift obtains the fog marker (and removes it from the battlefield)."],
+                            scoring: ["2 AP for each fog marker obtained"],
+                            
                         },
                         { 
                             id: "f4", 
                             name: "Banners", 
                             desc: "",
-                            required: ["bullet point one", "bullet point two"],
-                            description: ["bullet point one"],
-                            scoring: ["bullet point one", "bullet point two"],
-                            endGame: "text" 
+                            required: ["4 event tokens, numbered from 1 to 4."],
+                            preplabel:"Preperation",
+                            prep:["The company that wins the initiative receives event tokens 1 and 3, the rival company receives event tokens 2 and 4.","Each company places one of their event tokens on the “1” position of the turn counter (glory meter).","After deploying all units in the game preparation phase (including Scouts), each company, in deployment order,chooses one of their deployed units to carry the banner, placing an event token on their profile card.","Characters carrying the banner cannot join a unit","A unit carrying the banner cannot have a joined Character."],
+                            ruleslabel: "Banner",
+                            rules:["For each <img src='Blood.png' style= 'height:20px; display:inline; vertical-align:middle;'/> inflicted by the unit carrying the banner, its company advances their glory meter 1 position on the turn counter. If the glory meter is on position “10”, move the rival company’s glory meter back (to a minimum of 1)."],
+                            actionlabel:"",
+                            actions:["Lost banner: If the unit carrying the banner flees, is destroyed or leaves the battlefield, the company controlling it places the banner on the battlefield, adjacent to its leader, before removing the unit from the battlefield or fleeing.","Pick up the banner: If a company’s banner is on the battlefield, any adjacent allied unit may pick it up performing the Pick up banner simple action."],
+                            scoring: ["1 AP if their rival lost its banner at any point","1 AP if they didn't lose their own banner","1 AP if their glory meter is on the same position as their rivals","2 AP if their glory meter is higher on the turn counter than their rivals"],
+                             
                         },
                         { 
                             id: "f5", 
                             name: "Resources", 
                             desc: "",
-                            required: ["bullet point one", "bullet point two"],
-                            description: ["bullet point one"],
-                            scoring: ["bullet point one", "bullet point two"],
-                            endGame: "text" 
+                            required: ["2 event tokens"],
+                            preplabel:"Preparation",
+                            prep:["The company that wins the initiative receives event token 1, the rival company receives event token 2.","Each company places their event token on position “1” of the turn counter (resource meter)."],
+                            ruleslabel: "Resources",
+                            rules:["Units further than 12 strides from their deployment zone that are not engaged in combat may suffer 1 stress at the end of their activation to obtain resources.","Obtain Resources:The unit performs a simple roll, the dice of which will depend on the amount of troops in the unit (Support counts when calculating the number of troops for this action). The unit’s company advances their resource meter 1 position for each <img src='Success.png' style= 'width:20px; display:inline; vertical-align:middle;'/> they got. If the resource meter is on position '10', instead of advancing the resource meter, move the rival company’s resource meter back (to a minimum of 1).","A company cannot obtain resources more than once per turn."],
+                            actionlabel:"Dice Rolled",
+                            actions:["1 Troop: <img src='YDice.png' style= 'width:20px; display:inline; vertical-align:middle;'/>","2-3 Troops: <img src='YDice.png' style= 'width:20px; display:inline; vertical-align:middle;'/> <img src='ODice.png' style= 'width:20px; display:inline; vertical-align:middle;'/>","4+ Troops: <img src='YDice.png' style= 'width:20px; display:inline; vertical-align:middle;'/> <img src='ODice.png' style= 'width:20px; display:inline; vertical-align:middle;'/> <img src='RDice.png' style= 'width:20px; display:inline; vertical-align:middle;'/>"],
+                            scoring: ["1 AP if their resource meter is on position 4 or higher.","1 AP if their resource meter is on position 7 or higher.","1 AP if their resource meter is on position 10.","1 AP if their resource meter is higher on the turn counter than their rival's"],
+                            
                         } 
                     ]
                 }
@@ -576,6 +641,39 @@
             render();
             window.scrollTo(0, 0);
         }
+        function renderTerrain() {
+            mainContent.innerHTML = `
+                <div class="fade-in">
+                    <div class="category-header mb-8">
+                        <h2 class="heading-font gold-text text-3xl uppercase tracking-widest">Terrain Rules</h2>
+                        <p class="text-slate-400 text-sm mt-2">Environment interaction and visibility modifiers.</p>
+                    </div>
+
+                    <div class="action-card rounded-2xl overflow-hidden border-white/10 shadow-2xl">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left terrain-table border-collapse">
+                                <thead>
+                                    <tr>
+                                        <th>Terrain</th>
+                                        <th>Keywords</th>
+                                        <th class="text-center">Size</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${data.terrain.map(t => `
+                                        <tr>
+                                            <td class="font-bold text-white">${t.name}</td>
+                                            <td><span class="text-xs opacity-70">${t.keywords}</span></td>
+                                            <td class="text-center font-mono text-sm gold-text">${t.size}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
 
         function updateScore(player, type, delta) {
             scoreState[player][type] = Math.max(0, scoreState[player][type] + delta);
@@ -626,7 +724,7 @@
                             <h3 class="heading-font text-xl mb-1 text-blue-400">Keywords</h3>
                             <p class="text-[10px] opacity-60 uppercase">Round Structure</p>
                         </div>
-                        <div onclick="setView('Abilities')" class="action-card p-8 rounded-xl cursor-pointer border-blue-500/30">
+                        <div onclick="setView('abilities')" class="action-card p-8 rounded-xl cursor-pointer border-blue-500/30">
                             <h3 class="heading-font text-xl mb-1 text-blue-400">Abilities</h3>
                             <p class="text-[10px] opacity-60 uppercase">Round Structure</p>
                         </div>
@@ -796,13 +894,28 @@
                                         <ul class="step-list">${item.required.map(s => `<li class="step-item text-[11px]">${s}</li>`).join('')}</ul>
                                     </div>
                                     <div>
-                                        <p class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1">Description</p>
-                                        <ul class="step-list">${item.description.map(s => `<li class="step-item text-[11px]">${s}</li>`).join('')}</ul>
+                                        <p class="text-[11px] text-slate-400">${item.preplabel}</p>
+                                    </div>
+                                    <div>
+                                        <ul class="step-list">${item.prep.map(s => `<li class="step-item text-[11px]">${s}</li>`).join('')}</ul>
+                                    </div>
+                                    <div>
+                                        <p class="text-[11px] text-slate-400">${item.ruleslabel}</p>
+                                    </div>
+                                    <div>
+                                        <ul class="step-list">${item.rules.map(s => `<li class="step-item text-[11px]">${s}</li>`).join('')}</ul>
+                                    </div>
+                                    <div>
+                                        <p class="text-[11px] text-slate-400">${item.actionlabel}</p>
+                                    </div>
+                                    <div>
+                                        <ul class="step-list">${item.actions.map(s => `<li class="step-item text-[11px]">${s}</li>`).join('')}</ul>
                                     </div>
                                     <div>
                                         <p class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1">Scoring</p>
                                         <ul class="step-list">${item.scoring.map(s => `<li class="step-item text-[11px]">${s}</li>`).join('')}</ul>
                                     </div>
+                                  
                                 </div>
                             `;
                         }
@@ -885,6 +998,7 @@
             const query = searchInput.value.trim().toLowerCase();
             if (currentView === 'home') renderHome();
             else if (currentView === 'scoreboard') renderScoreboard();
+            else if (currentView === 'terrain') renderTerrain();
             else renderList(currentView, query);
         }
 
