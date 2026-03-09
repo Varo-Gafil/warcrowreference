@@ -155,7 +155,6 @@
         .step-list {
             list-style: none;
             padding-left: 0;
-            counter-reset: step-counter;
         }
 
         .step-item {
@@ -167,8 +166,7 @@
         }
 
         .step-item::before {
-            counter-increment: step-counter;
-            content: counter(step-counter);
+            content: "•";
             position: absolute;
             left: 0;
             top: 0;
@@ -381,61 +379,67 @@
                         { 
                             id: "s1", 
                             name: "Take Position", 
-                            desc: "Control vital strategic points on the map.", 
-                            required: ["bullet point one", "bullet point two"],
-                            rounds: ["bullet point one"],
-                            scoring: ["bullet point one", "bullet point two"],
-                            endGame: "text",
+                            desc: "", 
+                            required: ["2 red objective markers.", "2 Blue objective markers."],
+                            rounds: ["Each round has a duration of 5 turns."],
+                            scoring: ["1 MP for each objective of their rival’s color they control.", "1 MP if no objective of their color is controlled by their rival."],
+                            endGame: "The game ends at the end of round 3.",
+                            AdditionalRules:[],
                             image: "TakePositions.png"
                         },
                         { 
                             id: "s2", 
                             name: "Influence Zones", 
-                            desc: "Exert pressure across the sectors of the battlefield.",
-                            required: ["bullet point one", "bullet point two"],
-                            rounds: ["bullet point one"],
-                            scoring: ["bullet point one", "bullet point two"],
-                            endGame: "text",
+                            desc: "",
+                            required: ["2 red objective markers.", "2 Blue objective markers.","1 browm objective marker"],
+                            rounds: ["Each round has a duration of 5 turns."],
+                            scoring: ["1 MP if they control more objectives than their rival", "1 MP if they control at least one objective of their rivel's color.","1 MP if they control a least 2 objectives"],
+                            endGame: "The game ends at the end of round 3.",
+                            AdditionalRules:["Strategic Domain: All units that are not demoralized have their conquest calue increased by 1", " Influence Zones:Units may contest control of objectives at 7 strides instead of 3"],
                             image: "InfluenceZones.png"
                         },
                         { 
                             id: "s3", 
                             name: "Expanse", 
-                            desc: "Push into enemy territory while holding your ground.",
-                            required: ["bullet point one", "bullet point two"],
-                            rounds: ["bullet point one"],
-                            scoring: ["bullet point one", "bullet point two"],
-                            endGame: "text",
+                            desc: "",
+                            required: ["4 brown objective markers", "1 blue objective marker"],
+                            rounds: ["Each round has a duration of 5 turns."],
+                            scoring: ["2 MP if they control more brown objectives than their rival", "1 MP if they control the same amount of brown objectives as their rival","1 MP if they control the central objective"],
+                            endGame: "The game ends at the end of round 3.",
+                            AdditionalRules:["Brown objective markers start the game controlled by the company that has their deployment zone adjacent to them."],
                             image: "Expanse.png"
                         },
                         { 
                             id: "s4",
                             name: "Loot", 
-                            desc: "Recover precious resources from the fog.",
-                            required: ["bullet point one", "bullet point two"],
-                            rounds: ["bullet point one"],
-                            scoring: ["bullet point one", "bullet point two"],
-                            endGame: "text",
+                            desc: "",
+                            required: ["2 red objective markers.", "2 Blue objective markers.","1 browm objective marker"],
+                            rounds: ["Each round has a duration of 5 turns."],
+                            scoring: ["1 MP if they have at least 1 Loot", "1 MP if they have more loot than their rival","1 MP if their rival has no loot"],
+                            endGame: "The game ends at the end of round 3.",
+                             AdditionalRules:["Objective markers are used to represent loot.","At the end of its activation, a unit adjacent to an objective marker may suffer 1 stress to pick it up (placing it on their profile card).","Units may move through an objective marker but cannot end their movement on one.","Units cannot pick up objective markers of their rival’s color.","Units cannot carry more than 1 objective marker at the same time.","When a unit carrying loot is about to be removed from the battlefield, the company controlling it places the loot adjacent to their leader before removing it from the battlefield. If the unit has been destroyed and had an Officer Character joined, it may instead give the loot to the Character.","When a unit carrying loot becomes demoralized, place the objective marker adjacent to their leader before fleeing.","If a Character leaves a unit carrying loot, it can choose to take the loot or leave it in the unit."],
                             image: "Loot.png"
                         },
                         { 
                             id: "s5", 
                             name: "Consolidated Progress", 
-                            desc: "Maintain a steady advance across the field.",
-                            required: ["bullet point one", "bullet point two"],
-                            rounds: ["bullet point one"],
-                            scoring: ["bullet point one", "bullet point two"],
-                            endGame: "text",
+                            desc: "",
+                            required: ["2 red objective markers.", "2 Blue objective markers.","1 browm objective marker"],
+                            rounds: ["Each round has a duration of 5 turns."],
+                            scoring: ["1MP if they control the central objective", "1MP if they control objective 2 of their rival's color", "1 MP is no objective of their color (1 and 2) are controlled by their rival"],
+                            endGame: "The game ends at the end of round 3.",
+                            AdditionalRules:[],
                             image: "ConsolidatedProgress.png"
                         },
                         { 
                             id: "s6", 
                             name: "Quadrants", 
-                            desc: "Dominate the four corners of the battlefield.",
-                            required: ["bullet point one", "bullet point two"],
-                            rounds: ["bullet point one"],
-                            scoring: ["bullet point one", "bullet point two"],
-                            endGame: "text",
+                            desc: "",
+                            required: [],
+                            rounds: ["Each round has a duration of 5 turns."],
+                            scoring: ["2 MP if they control more quadrants than their rival", "1MP if they control the same amount of quadrants as their rival","1MP if they control at least 1 quadrant adjacent to the rival's deployment zone"],
+                            endGame: "The game ends at the end of round 3.",
+                            AdditionalRules:["All units that are not demoralized have their value increased by 1","Conquest value modifiers(from skills and effects are not increased)","The battlefield (not including deployment zones) is divided into four quadrants, which can be controlled as if they were objectives although no objective markers are used.","Units can contest control of a quadrant if their leader is within the quadrant (a leader whose base is in contact with more than one quadrant is not within any quadrant, so their unit cannot control or contest any quadrant).","Although no objective markers are used, a conquest marker is placed in each quadrant to indicate which company controls it."],
                             image: "Quadrants.png"
                         },
                     ]
@@ -445,7 +449,8 @@
                     items: [
                         { 
                             id: "f1", 
-                            name: "Track", 
+                            name: "Track",
+                            desc: "",
                             required: ["bullet point one", "bullet point two"],
                             description: ["bullet point one"],
                             scoring: ["bullet point one", "bullet point two"],
@@ -453,7 +458,8 @@
                         },
                         { 
                             id: "f2", 
-                            name: "Decapitation", 
+                            name: "Decapitation",
+                            desc: "",
                             required: ["bullet point one", "bullet point two"],
                             description: ["bullet point one"],
                             scoring: ["bullet point one", "bullet point two"],
@@ -461,7 +467,8 @@
                         },
                         { 
                             id: "f3", 
-                            name: "Rifts", 
+                            name: "Rifts",
+                            desc: "",
                             required: ["bullet point one", "bullet point two"],
                             description: ["bullet point one"],
                             scoring: ["bullet point one", "bullet point two"],
@@ -470,6 +477,7 @@
                         { 
                             id: "f4", 
                             name: "Banners", 
+                            desc: "",
                             required: ["bullet point one", "bullet point two"],
                             description: ["bullet point one"],
                             scoring: ["bullet point one", "bullet point two"],
@@ -478,6 +486,7 @@
                         { 
                             id: "f5", 
                             name: "Resources", 
+                            desc: "",
                             required: ["bullet point one", "bullet point two"],
                             description: ["bullet point one"],
                             scoring: ["bullet point one", "bullet point two"],
@@ -772,6 +781,11 @@
                                         <p class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1">End of the Game</p>
                                         <p class="text-[11px] text-slate-400">${item.endGame}</p>
                                     </div>
+                                    <div>
+                                        <p class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1">Additional Rules</p>
+                                        <ul class="step-list">${item.AdditionalRules.map(s => `<li class="step-item text-[11px]">${s}</li>`).join('')}</ul>
+                                    </div>
+
                                 </div>
                             `;
                         } else {
@@ -817,7 +831,7 @@
             if (selectedScenario && selectedFeat) {
                 const btnContainer = document.createElement('div');
                 btnContainer.className = "mt-12 mb-24 text-center";
-                btnContainer.innerHTML = `<button onclick="setView('scoreboard')" class="btn-gold px-12 py-4 text-xl">View Scoreboard</button>`;
+                btnContainer.innerHTML = `<button onclick="setView('scoreboard')" class="btn-gold px-12 py-4 text-xl">Start Adventure</button>`;
                 wrapper.appendChild(btnContainer);
             }
         }
