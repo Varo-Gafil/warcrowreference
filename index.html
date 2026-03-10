@@ -329,6 +329,17 @@
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
         </div>
+
+    <!-- Search added to Side Nav -->
+        <div class="px-6 py-4 border-b border-white/5">
+            <div class="relative w-full">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="h-3 w-3 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </div>
+                <input type="text" id="searchInput" placeholder="Search rules..." class="bg-white/5 border border-[#2d343f] w-full py-2 pl-8 pr-4 rounded text-xs text-white focus:outline-none focus:border-[#c5a059] transition-all">
+            </div>
+        </div>
+
         <nav class="flex-1 overflow-y-auto no-scrollbar py-4">
             <div onclick="setView('home')" id="side-nav-home" class="side-nav-link active">Home</div>
             <div onclick="setView('scenario')" id="side-nav-scenario" class="side-nav-link">Scenario</div>
@@ -367,23 +378,12 @@
     <main class="max-w-6xl mx-auto px-6 mt-8 mb-24" id="mainContent"></main>
 
     <!-- Search Footer -->
-    <footer class="fixed bottom-0 left-0 right-0 p-4 md:p-6 z-40 bg-[#0a0c10]/95 backdrop-blur-md">
-        <div class="max-w-2xl mx-auto">
-            <div class="flex flex-col md:flex-row items-center gap-4 mb-3">
-                <div class="relative w-full">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg class="h-4 w-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                    </div>
-                    <input type="text" id="searchInput" placeholder="Search rules, keywords, or actions..." class="bg-white/5 border border-[#2d343f] w-full py-3 pl-10 pr-4 rounded-lg text-sm text-white focus:outline-none focus:border-[#c5a059] transition-all shadow-2xl">
-                </div>
-                <p class="hidden md:block text-[9px] uppercase tracking-widest text-slate-500 font-bold whitespace-nowrap">Press <span class="text-slate-300">/</span> to search</p>
-            </div>
-            <div class="text-center">
-                <p class="text-[9px] text-slate-500 uppercase tracking-widest leading-relaxed">
-                    Warcrow is a &copy; Corvus Belli game. All rights reserved.<br>
-                    Warcrow Companion is an unofficial fan-made application.
-                </p>
-            </div>
+    <footer class="mt-auto p-8 bg-[#0d1016]">
+        <div class="max-w-2xl mx-auto text-center">
+            <p class="text-[10px] text-slate-500 uppercase tracking-[0.2em] leading-relaxed">
+                Warcrow is a &copy; Corvus Belli game. All rights reserved.<br>
+                Warcrow Companion is an unofficial fan-made application.
+            </p>
         </div>
     </footer>
 
@@ -400,17 +400,16 @@
 
         const data = {
             terrain: [
-                { name: "Clear", keywords: "None", size: "0" },
-                { name: "Forest", keywords: "Difficult, Cover", size: "1" },
-                { name: "Low Wall", keywords: "Cover, Obstacle", size: "0.5" },
-                { name: "High Wall", keywords: "Blocking, Obstacle", size: "2" },
-                { name: "Hill", keywords: "Elevated", size: "1" },
-                { name: "Deep Water", keywords: "Impassable", size: "0" },
-                { name: "Shallow Water", keywords: "Difficult", size: "0" },
-                { name: "Ruin", keywords: "Cover, Difficult", size: "1.5" },
-                { name: "Dense Smoke", keywords: "Blocking LoS", size: "2" },
-                { name: "Building", keywords: "Blocking, Impassable", size: "3" },
-                { name: "Barricade", keywords: "Cover, Difficult", size: "1" }
+                { name: "Fence/Barricade", keywords: "Cover(<img src='BKDice.png' style= 'width:20px; display:inline; vertical-align:middle;'/>)", size: "Base between 4 and 13 strides long and no more than 1 stride wide." },
+                { name: "Wall", keywords: "Cover (<img src='BLDice.png' style= 'width:20px; display:inline; vertical-align:middle;'/>)", size: "Base between 4 and 13 strides long and no more than 1 stride wide." },
+                { name: "Small Structure", keywords: "Block LoS, Cover(<img src='BKDice.png' style= 'width:20px; display:inline; vertical-align:middle;'/>), Impassible", size: "Base with a surface equivalent to a square measuring between 4 and 7 strides a side." },
+                { name: "Building", keywords: "Block LoS, Cover(<img src='BLDice.png' style= 'width:20px; display:inline; vertical-align:middle;'/>), Impassible", size: "Base with a surface equivalent to a square measuring between 7 and 10 strides a side." },
+                { name: "Light Forest", keywords: "Block LoS, Cover(<img src='BKDice.png' style= 'width:20px; display:inline; vertical-align:middle;'/>)", size: "Base with a surface equivalent to a square measuring between 7 and 10 strides a side." },
+                { name: "Dense Forest", keywords: "Rugged(Cavalry,Golem), Cover(<img src='BKDice.png' style= 'width:20px; display:inline; vertical-align:middle;'/>)", size: "Base with a surface equivalent to a square measuring between 7 and 10 strides a side." },
+                { name: "River", keywords: "Rugged", size: "Base between 4 and 13 strides long and no more than 7 strides wide." },
+                { name: "Lake", keywords: "Impassable", size: "Base with a surface equivalent to a square measuring between 7 and 10 strides a side." },
+                { name: "Ruins", keywords: "Rugged, Cover(<img src='BKDice.png' style= 'width:20px; display:inline; vertical-align:middle;'/>) ", size: "Base with a surface equivalent to a square measuring between 7 and 10 strides a side." },
+                { name: "Rugged Terrain", keywords: "Rugged", size: "Base with a surface equivalent to a square measuring between 7 and 10 strides a side." },
             ],
             scenario: [
                 {
@@ -466,7 +465,7 @@
                             desc: "",
                             required: ["2 red objective markers.", "2 Blue objective markers.","1 browm objective marker"],
                             rounds: ["Each round has a duration of 5 turns."],
-                            scoring: ["1MP if they control the central objective", "1MP if they control objective 2 of their rival's color", "1 MP is no objective of their color (1 and 2) are controlled by their rival"],
+                            scoring: ["1 MP if they control the central objective", "1 MP if they control objective 2 of their rival's color", "1 MP is no objective of their color (1 and 2) are controlled by their rival"],
                             endGame: "The game ends at the end of round 3.",
                             AdditionalRules:[],
                             image: "ConsolidatedProgress.png"
@@ -645,8 +644,7 @@
             mainContent.innerHTML = `
                 <div class="fade-in">
                     <div class="category-header mb-8">
-                        <h2 class="heading-font gold-text text-3xl uppercase tracking-widest">Terrain Rules</h2>
-                        <p class="text-slate-400 text-sm mt-2">Environment interaction and visibility modifiers.</p>
+                        <h2 class="heading-font gold-text text-3xl uppercase tracking-widest">Basic Terrain Elements</h2>
                     </div>
 
                     <div class="action-card rounded-2xl overflow-hidden border-white/10 shadow-2xl">
@@ -656,7 +654,7 @@
                                     <tr>
                                         <th>Terrain</th>
                                         <th>Keywords</th>
-                                        <th class="text-center">Size</th>
+                                        <th class="text-left">Size</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -664,11 +662,41 @@
                                         <tr>
                                             <td class="font-bold text-white">${t.name}</td>
                                             <td><span class="text-xs opacity-70">${t.keywords}</span></td>
-                                            <td class="text-center font-mono text-sm gold-text">${t.size}</td>
+                                            <td class="text-left font-mono text-sm gold-text">${t.size}</td>
                                         </tr>
                                     `).join('')}
                                 </tbody>
                             </table>
+                        </div>
+                    </div>
+                    <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-white/5 p-4 rounded-lg border border-white/5">
+                            <h4 class="heading-font gold-text text-xs uppercase mb-2">Block LoS</h4>
+                            <p class="text-xs text-slate-400">The element blocks all Lines of Sight drawn through it, as well as LoS drawn from within it and those drawn into it. Unless a terrain feature has this keyword, it is never considered to block LoS.</p>
+                        </div>
+                        <div class="bg-white/5 p-4 rounded-lg border border-white/5">
+                            <h4 class="heading-font gold-text text-xs uppercase mb-2">Cover (D)</h4>
+                            <p class="text-xs text-slate-400">Units adjacent to this terrain feature can benefit from cover from a ranged attack. (See “Attacking at a distance. Cover”). The ‘D’ value indicates the automatic dice or symbols that adjacent units add to their defense roll.</p>
+                        </div>
+                        <div class="bg-white/5 p-4 rounded-lg border border-white/5">
+                            <h4 class="heading-font gold-text text-xs uppercase mb-2">Impassable</h4>
+                            <p class="text-xs text-slate-400">Units cannot move through this terrain feature or end their movement on it. If an element gains the Impassable characteristic during battle (for example, as a result of a spell), units within it must move to become adjacent.</p>
+                        </div>
+                        <div class="bg-white/5 p-4 rounded-lg border border-white/5">
+                            <h4 class="heading-font gold-text text-xs uppercase mb-2">Lethal (X : D)</h4>
+                            <p class="text-xs text-slate-400">Units defined by ‘X’, which are adjacent to this element at the beginning of their activation, suffer a melee attack with a ‘D’ roll. The terrain element cannot take damage and will not push back units.</br> </br> “X” can be the name of a unit, a characteristic, a keyword, or several groups of them separated by lines (“|”). (See examples in “Characters. Join a unit”). If no ‘X’ value is specified, the effect is applicable to all units.</p>
+                        </div>
+                        <div class="bg-white/5 p-4 rounded-lg border border-white/5">
+                            <h4 class="heading-font gold-text text-xs uppercase mb-2">Rugged (X) </h4>
+                            <p class="text-xs text-slate-400"> Units defined by ‘X’ receive the slowed state at any moment they are adjacent to the terrain element during their activation. In addition, these units cannot declare charge if the charge movement would take the unit adjacent to the terrain element at any point of its trajectory. </br> </br> “X” can be the name of a unit, a characteristic, a keyword, or several groups of them separated by lines (“|”). (See examples in “Characters. Join a unit”). If no ‘X’ value is specified, the effect is applicable to all units.</p>
+                        </div>
+                        <div class="bg-white/5 p-4 rounded-lg border border-white/5">
+                            <h4 class="heading-font gold-text text-xs uppercase mb-2">Sinister (X) </h4>
+                            <p class="text-xs text-slate-400">Units defined by ‘X’ that are within 4 strides of this element at the start of their activation must pass a WP test or become stressed. </br> </br> “X” can be the name of a unit, a characteristic, a keyword, or several groups of them separated by lines (“|”). (See examples in “Characters. Join a unit”). If no ‘X’ value is specified, the effect is applicable to all units.</p>
+                        </div>
+                        <div class="bg-white/5 p-4 rounded-lg border border-white/5">
+                            <h4 class="heading-font gold-text text-xs uppercase mb-2">Trap (X) </h4>
+                            <p class="text-xs text-slate-400"> This terrain feature has been created by a unit using a skill or spell. Units that can remove traps can remove this terrain element from the battlefield.</p>
                         </div>
                     </div>
                 </div>
