@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Warcrow Companion | Skirmish Reference</title>
+    <title>Warcrow Reference | Quick Reference and Scoreboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@300;400;600&display=swap');
@@ -361,7 +361,7 @@
         <div class="max-w-6xl mx-auto w-full flex items-center justify-between">
             <div onclick="setView('home')" class="cursor-pointer">
                 <h1 class="heading-font text-2xl font-bold tracking-widest gold-text leading-tight">WARCROW</h1>
-                <p class="text-[10px] uppercase tracking-[0.2em] opacity-60">Companion</p>
+                <p class="text-[10px] uppercase tracking-[0.2em] opacity-60">Reference</p>
             </div>
             
             <button onclick="toggleNav()" class="flex items-center gap-3 group">
@@ -595,24 +595,74 @@
             ],
             actions: [
                 {
-                    category: "Simple Actions (1 Action Point)",
+                    category: "Simple Actions",
                     items: [
+                        { name: "Cast a Spell", desc: "Reposition on the battlefield.", steps: ["Move up to MOV.", "Rotate freely.", "Stop on contact."] },
+                        { name: "Melee Attack", desc: "Standard strike.", steps: ["Base contact required.", "Face-to-face roll."] },
                         { name: "Move", desc: "Reposition on the battlefield.", steps: ["Move up to MOV.", "Rotate freely.", "Stop on contact."] },
-                        { name: "Melee Attack", desc: "Standard strike.", steps: ["Base contact required.", "Face-to-face roll."] }
+                        { name: "Ranged Attack", desc: "Reposition on the battlefield.", steps: ["Move up to MOV.", "Rotate freely.", "Stop on contact."] },
+                        { name: "Tinge Ability", desc: "Reposition on the battlefield.", steps: ["Move up to MOV.", "Rotate freely.", "Stop on contact."] },
+                        { name: "Use a Skill", desc: "Reposition on the battlefield.", steps: ["Move up to MOV.", "Rotate freely.", "Stop on contact."] },
+                    ]
+
+                },
+                {  
+                    category: "Complex Actions",
+                    items: [
+                        { name: "Assault", desc: "Reposition on the battlefield.", steps: ["Move up to MOV.", "Rotate freely.", "Stop on contact."] },
+                        { name: "Charge", desc: "Standard strike.", steps: ["Base contact required.", "Face-to-face roll."] },
+                        { name: "Rest", desc: "Standard strike.", steps: ["Base contact required.", "Face-to-face roll."] },
+                        { name: "Use a Long Skill", desc: "Standard strike.", steps: ["Base contact required.", "Face-to-face roll."] },
                     ]
                 }
             ],
             magic: [
-                { category: "Process", items: [{ name: "Casting", desc: "Steps for casting spells.", steps: ["Declare.", "Verify Range/LoS.", "Gather Dice.", "Roll.", "Resolve."] }] }
+                { category: "Process", 
+                items: [
+                    { name: "Casting", desc: "Steps for casting spells.", steps: ["Declare.", "Verify Range/LoS.", "Gather Dice.", "Roll.", "Resolve."] }] }
             ],
             states: [
-                { category: "States", items: [{ name: "Slowed", desc: "MOV reduced by half." }] }
+                { category: "States", 
+                items: [
+                    { name: "<img src='Demoralized.png' style= 'width:40px; display:inline; vertical-align:middle;'/> Demoralized", desc: "If your unit is demoralized: </br> </br> • It cannot be activated in any way.</br> • It cannot stress itself in any way and cannot reduce its stress.</br> • It cannot control objectives (we consider its conquest value null).</br> • It cannot activate its command abilities.</br> • If it participates in combat, it will always flee after the result. (See “Melee Attack”)." },
+                    { name: "<img src='Disarmed.png' style= 'width:40px; display:inline; vertical-align:middle;'/> Disarmed", desc: "Your unit must cancel one die from its attack rolls in which it has obtained at least one <img src='Success.png' style= 'width:20px; display:inline; vertical-align:middle;'/>. In the case of multiple dice, your opponent will choose which one. You must apply this effect after rolling the dice (with all possible repetitions), but just before starting the Switches step.</br> </br> You cannot add modifiers to your attack rolls. </br></br> Remove this state at the end of the resolution of a roll in which you have applied its effects (if you have not been able to cancel any die, the state is considered to remain active)." },
+                    { name: "<img src='Frightened.png' style= 'width:40px; display:inline; vertical-align:middle;'/> Frightened", desc: "When making a WP test, your unit must reroll the dice on which it rolls at least one <img src='Success.png' style= 'width:20px; display:inline; vertical-align:middle;'/>.</br></br> Remove this state after making a willpower test." },
+                    { name: "<img src='Slowed.png' style= 'width:40px; display:inline; vertical-align:middle;'/> Slowed", desc: "Your unit can only use one of the two MOV values when performing the move and assault actions. Additionally, you must subtract 4 strides from your charge movement (up to a minimum value of 0). For example, if your unit has movement 3-2 (9), it can only move 3 and can only move 5 when it charges.</br></br> Remove this state at the end of the activation in which your unit performs the action move, charge or assault." },
+                    { name: "<img src='Vulnerable.png' style= 'width:40px; display:inline; vertical-align:middle;'/> Vulnerable", desc: "Your unit must cancel one die from its defense rolls in which it has rolled at least one <img src='Shield.png' style= 'height:20px; display:inline; vertical-align:middle;'/>. In the case of multiple dice, your opponent will choose which one. You must apply this effect after rolling the dice (with all possible repetitions), but just before starting the Switches step.</br></br> You cannot add modifiers to your defense rolls.</br></br> Remove this state at the end of the resolution of a roll in which you have applied its effects (if you have not been able to cancel any die, the state is considered to remain active)." },
+
+                ] }
             ],
             keywords: [
-                { category: "Keywords", items: [{ name: "Piercing", desc: "Ignores some shields." }] }
+                { category: "Keywords", 
+                items: [
+                    { name: "Aim", desc: "Ignores some shields." },
+                    { name: "Ambusher", desc: "Ignores some shields." },
+                    { name: "Berserker Rage", desc: "Ignores some shields." },
+                    { name: "Bloodlust (x)", desc: "Ignores some shields." },
+                    { name: "Cover (D)", desc: "Ignores some shields." },
+                    { name: "Dispel (D)", desc: "Ignores some shields." },
+                    { name: "Elite", desc: "Ignores some shields." },
+                    { name: "Fearless", desc: "Ignores some shields." },
+                    { name: "Golem", desc: "Ignores some shields." },
+                    { name: "Immovable", desc: "Ignores some shields." },
+                    { name: "Intimidating (N)", desc: "Ignores some shields." },
+                    { name: "Large", desc: "Ignores some shields." },
+                    { name: "Manned", desc: "Ignores some shields." },
+                    { name: "Preferred Terrain (E)", desc: "Ignores some shields." },
+                    { name: "Raging", desc: "Ignores some shields." },
+                    { name: "Scout", desc: "Ignores some shields." },
+                    { name: "<img src='Tinge.png' style= 'width:40px; display:inline; vertical-align:middle;'/> Tinge", desc: "Ignores some shields." }
+                 ] }
             ],
             abilities: [
-                { category: "Abilities", items: [{ name: "Piercing", desc: "Ignores some shields." }] }
+                { category: "Abilities", 
+                items: [
+                    { name: "<img src='command.png' style= 'width:40px; display:inline; vertical-align:middle;'/>Command", desc: "Ignores some shields." },
+                    { name: "<img src='Passive.png' style= 'width:40px; display:inline; vertical-align:middle;'/> Passive", desc: "Ignores some shields." },
+                    { name: "<img src='skill.png' style= 'width:40px; display:inline; vertical-align:middle;'/> Skill", desc: "Ignores some shields." },
+                    { name: "<img src='Spell.png' style= 'width:40px; display:inline; vertical-align:middle;'/> Spell", desc: "Ignores some shields." },
+                    { name: "<img src='Tinge.png' style= 'width:40px; display:inline; vertical-align:middle;'/> Tinge", desc: "Ignores some shields." },
+                ] }
             ]
         };
 
@@ -730,38 +780,33 @@
                         </div>
                         <div onclick="setView('summary')" class="action-card p-8 rounded-xl cursor-pointer border-blue-500/30">
                             <h3 class="heading-font text-xl mb-1 text-blue-400">Turn Summary</h3>
-                            <p class="text-[10px] opacity-60 uppercase">Round Structure</p>
+                            <p class="text-[10px] opacity-60 uppercase">Turn Structure</p>
                         </div>
                         <div onclick="setView('tests')" class="action-card p-8 rounded-xl cursor-pointer border-blue-500/30">
                             <h3 class="heading-font text-xl mb-1 text-blue-400">Test Summary</h3>
-                            <p class="text-[10px] opacity-60 uppercase">Round Structure</p>
+                            <p class="text-[10px] opacity-60 uppercase">Attack Process</p>
                         </div>
-                          <div onclick="setView('actions')" class="action-card p-8 rounded-xl cursor-pointer border-blue-500/30">
-                            <h3 class="heading-font text-xl mb-1 text-blue-400">Actions</h3>
-                            <p class="text-[10px] opacity-60 uppercase">Round Structure</p>
+                          <div onclick="setView('actions')" class="action-card p-8 rounded-xl cursor-pointer border-cyan-500/30">
+                            <h3 class="heading-font text-xl mb-1 text-cyan-400">Actions</h3>
                         </div>
-                            <div onclick="setView('magic')" class="action-card p-8 rounded-xl cursor-pointer border-blue-500/30">
-                            <h3 class="heading-font text-xl mb-1 text-blue-400">Magic</h3>
-                            <p class="text-[10px] opacity-60 uppercase">Round Structure</p>
+                            <div onclick="setView('magic')" class="action-card p-8 rounded-xl cursor-pointer border-cyan-500/30">
+                            <h3 class="heading-font text-xl mb-1 text-cyan-400">Magic</h3>
                         </div>
                            <div onclick="setView('states')" class="action-card p-8 rounded-xl cursor-pointer border-blue-500/30">
                             <h3 class="heading-font text-xl mb-1 text-blue-400">States</h3>
-                            <p class="text-[10px] opacity-60 uppercase">Round Structure</p>
                         </div>
                         <div onclick="setView('keywords')" class="action-card p-8 rounded-xl cursor-pointer border-blue-500/30">
                             <h3 class="heading-font text-xl mb-1 text-blue-400">Keywords</h3>
-                            <p class="text-[10px] opacity-60 uppercase">Round Structure</p>
                         </div>
                         <div onclick="setView('abilities')" class="action-card p-8 rounded-xl cursor-pointer border-blue-500/30">
                             <h3 class="heading-font text-xl mb-1 text-blue-400">Abilities</h3>
-                            <p class="text-[10px] opacity-60 uppercase">Round Structure</p>
                         </div>
                     </div>
                 </div>
             `;
         }
 
-        function renderScoreboard() {
+function renderScoreboard() {
             const scenario = data.scenario[0].items.find(i => i.id === selectedScenario);
             const feat = data.scenario[1].items.find(i => i.id === selectedFeat);
 
@@ -786,11 +831,12 @@
                             const military = scoreState[`p${p}`].military;
                             const arcane = scoreState[`p${p}`].arcane;
                             const victoryTotal = military + arcane;
+                            const playerName = p === 1 ? 'Red Player' : 'Blue Player';
+                            const playerColorClass = p === 1 ? 'text-red-500' : 'text-blue-400';
 
                             return `
                                 <div class="action-card rounded-2xl p-8">
-                                    <h3 class="heading-font text-2xl gold-text text-center mb-8 pb-4 border-b border-white/10">Player ${p}</h3>
-                                    
+                                    <h3 class="heading-font text-2xl ${playerColorClass} text-center mb-8 pb-4 border-b border-white/10">${playerName}</h3>
                                     <div class="space-y-12">
                                         <div class="text-center">
                                             <p class="text-[10px] uppercase tracking-widest text-red-400 mb-4 font-bold">Military Points (MP)</p>
@@ -800,7 +846,6 @@
                                                 <button onclick="updateScore('p${p}', 'military', 1)" class="counter-btn">+</button>
                                             </div>
                                         </div>
-
                                         <div class="text-center">
                                             <p class="text-[10px] uppercase tracking-widest text-purple-400 mb-4 font-bold">Arcane Points (AP)</p>
                                             <div class="flex items-center justify-center gap-8">
@@ -809,12 +854,9 @@
                                                 <button onclick="updateScore('p${p}', 'arcane', 1)" class="counter-btn border-purple-900/40">+</button>
                                             </div>
                                         </div>
-
                                         <div class="mt-8 pt-8 border-t border-white/10 text-center">
                                             <p class="text-[10px] uppercase tracking-widest text-slate-500 mb-2 font-bold">Total Victory Points</p>
-                                            <div class="text-4xl heading-font gold-text font-bold">
-                                                ${victoryTotal}
-                                            </div>
+                                            <div class="text-4xl heading-font gold-text font-bold">${victoryTotal}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -823,10 +865,7 @@
                     </div>
 
                     <div class="mt-16 flex flex-col items-center gap-6">
-                        <button onclick="resetAll()" class="btn-danger w-full max-w-xs">
-                            End Adventure
-                        </button>
-                        <button onclick="resetOnlyScores()" class="text-[10px] uppercase tracking-widest opacity-40 hover:opacity-100 transition-opacity underline">Reset Scores Only</button>
+                        <button onclick="resetAll()" class="btn-danger w-full max-w-xs">End Adventure</button>
                     </div>
                 </div>
             `;
