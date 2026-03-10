@@ -314,12 +314,53 @@
 
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Modal / Information Panel Style */
+        .info-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.85);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            padding: 2rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .info-modal.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .info-panel {
+            background: var(--warcrow-card);
+            border: 1px solid var(--warcrow-gold);
+            width: 100%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            padding: 2.5rem;
+            border-radius: 8px;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+        }
     </style>
 </head>
 <body class="min-h-screen">
 
     <!-- Overlay -->
     <div id="navOverlay" class="nav-overlay" onclick="toggleNav()"></div>
+
+        <!-- Info Modal -->
+    <div id="infoModal" class="info-modal" onclick="closeInfoModal()">
+        <div class="info-panel no-scrollbar" onclick="event.stopPropagation()">
+            <button onclick="closeInfoModal()" class="absolute top-4 right-4 text-slate-500 hover:text-white">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <div id="infoContent"></div>
+        </div>
+    </div>
 
     <!-- Side Navigation -->
     <aside id="sideNav">
@@ -597,12 +638,29 @@
                 {
                     category: "Simple Actions",
                     items: [
-                        { name: "Cast a Spell", desc: "Reposition on the battlefield.", steps: ["Move up to MOV.", "Rotate freely.", "Stop on contact."] },
-                        { name: "Melee Attack", desc: "Standard strike.", steps: ["Base contact required.", "Face-to-face roll."] },
-                        { name: "Move", desc: "Reposition on the battlefield.", steps: ["Move up to MOV.", "Rotate freely.", "Stop on contact."] },
-                        { name: "Ranged Attack", desc: "Reposition on the battlefield.", steps: ["Move up to MOV.", "Rotate freely.", "Stop on contact."] },
-                        { name: "Tinge Ability", desc: "Reposition on the battlefield.", steps: ["Move up to MOV.", "Rotate freely.", "Stop on contact."] },
-                        { name: "Use a Skill", desc: "Reposition on the battlefield.", steps: ["Move up to MOV.", "Rotate freely.", "Stop on contact."] },
+                        {   name: "Cast a Spell", 
+                            desc: "Reposition on the battlefield.", 
+                            steps: ["Move up to MOV.", "Rotate freely.", "Stop on contact."] },
+                        {   
+                            name: "Melee Attack", 
+                            desc:"1. Attacker performs positioning maneuvers.</br> 2. Select a melee attack from your unit profile.</br> 3. Your opponent makes the defense roll. At this point they must declare whether their unit is stressed <img src='stress.png' style= 'height:20px; display:inline; vertical-align:middle;'/> to add their modifier to the defense roll.</br> 5. Gather your attack dice pool. Declare now if your unit is stressed <img src='stress.png' style= 'height:20px; display:inline; vertical-align:middle;'/> to add the modifier to its attack roll.</br> 6. Resolve a Face to Face roll between your attack roll and your opponent’s defense roll.</br> 7. Your opponent receives as much damage as <img src='Success.png' style= 'height:20px; display:inline; vertical-align:middle;'/> remains on your roll and vice versa, your unit receives as much damage as <img src='Success.png' style= 'height:20px; display:inline; vertical-align:middle;'/> remains on your opponent’s roll. To determine who won the fight, compare the total damage inflicted by each side:", 
+                            steps: ["If your unit has inflicted more damage (at least 1 <img src='Blood.png' style= 'height:20px; display:inline; vertical-align:middle;'/> ), we say that it has won the combat or that it is the winning unit.","If your unit has suffered more damage (at least 1 <img src='Blood.png' style= 'height:20px; display:inline; vertical-align:middle;'/> ), it has lost the combat or is the defeated unit. Also, your unit is stressed <img src='stress.png' style= 'height:20px; display:inline; vertical-align:middle;'/>.","If both units have suffered the same amount of damage, there is no winner or loser and both units remain in contention."]},
+                        {   
+                            name: "Move", 
+                            desc: "Reposition on the battlefield.", 
+                            steps: ["Move up to MOV.", "Rotate freely.", "Stop on contact."] },
+                        {   
+                            name: "Ranged Attack", 
+                            desc: "Reposition on the battlefield.", 
+                            steps: ["Move up to MOV.", "Rotate freely.", "Stop on contact."] },
+                        {   
+                            name: "Tinge Ability", 
+                            desc: "Reposition on the battlefield.", 
+                            steps: ["Move up to MOV.", "Rotate freely.", "Stop on contact."] },
+                        {  
+                             name: "Use a Skill", 
+                             desc: "Reposition on the battlefield.", 
+                             steps: ["Move up to MOV.", "Rotate freely.", "Stop on contact."] },
                     ]
 
                 },
@@ -635,22 +693,27 @@
             keywords: [
                 { category: "Keywords", 
                 items: [
-                    { name: "Aim", desc: "Ignores some shields." },
+                    { name: "Aim", desc: "Your unit can re-roll its ranged attack rolls. The target unit of your ranged attack cannot benefit from Cover(D)." },
                     { name: "Ambusher", desc: "Ignores some shields." },
+                    { name: "Attract (X)", desc: "The target unit must approach your unit by making a movement of X strides in the direction that joins the center of the opponent’s troop leaders base to the center of your troop leaders base. This movement does not cause an opportunity attack.</br></br> If the target unit comes into contact with a unit or an Impassable terrain element while moving, it will stop its movement right at that point.</br></br> <i>Note: If the targeted unit touches your unit, they will be engaged in combat (but we do not consider it has charged).</i>" },
                     { name: "Berserker Rage", desc: "Ignores some shields." },
                     { name: "Bloodlust (x)", desc: "Ignores some shields." },
-                    { name: "Cover (D)", desc: "Ignores some shields." },
+                    { name: "Cover (D)", desc: "Units adjacent to this unit (allied or not) can benefit from cover against a ranged attack. (See “Attacking at a distance. Cover”). The “D” value indicates the automatic dice or symbols that adjacent units add to their defense roll." },
                     { name: "Dispel (D)", desc: "Ignores some shields." },
+                    { name: "Displace (X)", desc: "The unit you displace must make a straight movement of X strides in the direction you indicate. The effects of Terrain elements cannot affect this move (except Impassable). This movement does not cause an opportunity attack.</br></br>If when displacing the unit it comes into contact with a unit or an Impassable terrain element, it stops its movement right at that point.</br></br> <i> Note: You can displace a unit to engage it in combat (it is not considered to have charged).</i>" },
                     { name: "Elite", desc: "Ignores some shields." },
-                    { name: "Fearless", desc: "Ignores some shields." },
+                    { name: "Fearless", desc: "Your unit ignores the effects of Intimidating and is immune to the fear keyword." },
                     { name: "Golem", desc: "Ignores some shields." },
-                    { name: "Immovable", desc: "Ignores some shields." },
+                    { name: "Immovable", desc: "Your unit cannot be attracted, shoved, placed, displaced, or pushed back unless you want it to." },
                     { name: "Intimidating (N)", desc: "Ignores some shields." },
+                    { name: "Join (X)", desc: "Ignores some shields." },
                     { name: "Large", desc: "Ignores some shields." },
                     { name: "Manned", desc: "Ignores some shields." },
+                    { name: "Place (X)", desc: "Indicate a point on the battlefield X strides from your units troop leader. Whoever controls the target unit must take their troop leader and place it on the designated point. You must then place the rest of the target unit’s troops into formation with it.</br></br> The placed unit does not provoke opportuny attacks.</br></br> Remember that you cannot place models on top of other models, and you cannot place a unit on an Impassable terrain feature.</br></br> You can place the target unit engaged in combat with another unit (it is not considered to have charged)." },
                     { name: "Preferred Terrain (E)", desc: "Ignores some shields." },
                     { name: "Raging", desc: "Ignores some shields." },
                     { name: "Scout", desc: "Ignores some shields." },
+                    { name: "Shove (X)", desc: "The target unit must distance itself from your unit by making a movement of X strides in the direction that joins the center of the opponent' troop leaders base to the center of your troop leaders base. This movement does not cause an opportunity attack.</br></br> If the target unit comes into contact with a unit or an Impassable terrain element while moving, it will stop its movement right at that point.</br></br> <i>Note: This move allows the target unit to engage in combat (it is not considered to have charged).</i>" },
                     { name: "<img src='Tinge.png' style= 'width:40px; display:inline; vertical-align:middle;'/> Tinge", desc: "Ignores some shields." }
                  ] }
             ],
@@ -670,6 +733,8 @@
         const searchInput = document.getElementById('searchInput');
         const sideNav = document.getElementById('sideNav');
         const navOverlay = document.getElementById('navOverlay');
+        const infoModal = document.getElementById('infoModal');
+        const infoContent = document.getElementById('infoContent');
 
         function toggleNav() {
             sideNav.classList.toggle('open');
@@ -758,6 +823,82 @@
             if (currentView === 'scoreboard') renderScoreboard();
         }
 
+        function showInfo(type, id) {
+            const list = type === 'scenario' ? data.scenario[0].items : data.scenario[1].items;
+            const item = list.find(i => i.id === id);
+            if (!item) return;
+            if (type === 'scenario') {
+                            infoContent.innerHTML = `
+                                    <h2 class="heading-font gold-text text-2xl uppercase tracking-widest mb-6 border-b border-slate-700/30 pb-4">${item.name}</h2>
+                                    <div>
+                                        <p class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1">Required Materials</p>
+                                        <ul class="step-list">${item.required.map(s => `<li class="step-item text-[11px]">${s}</li>`).join('')}</ul>
+                                    </div>
+                                    <div>
+                                        <p class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1">Rounds</p>
+                                        <ul class="step-list">${item.rounds.map(s => `<li class="step-item text-[11px]">${s}</li>`).join('')}</ul>
+                                    </div>
+                                    <div>
+                                        <p class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1">Scoring</p>
+                                        <ul class="step-list">${item.scoring.map(s => `<li class="step-item text-[11px]">${s}</li>`).join('')}</ul>
+                                    </div>
+                                    <div>
+                                        <p class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1">End of the Game</p>
+                                        <p class="text-[11px] text-slate-400">${item.endGame}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1">Additional Rules</p>
+                                        <ul class="step-list">${item.AdditionalRules.map(s => `<li class="step-item text-[11px]">${s}</li>`).join('')}</ul>
+                                    </div>
+
+                                </div>
+				                <button onclick="closeInfoModal()" class="mt-10 w-full btn-gold">Back to Scoreboard</button>
+                            `;
+                        } else {
+                            infoContent.innerHTML = `
+                                    <h2 class="heading-font gold-text text-2xl uppercase tracking-widest mb-6 border-b border-slate-700/30 pb-4">${item.name}</h2>
+                                    <div>
+                                        <p class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1">Required Materials</p>
+                                        <ul class="step-list">${item.required.map(s => `<li class="step-item text-[11px]">${s}</li>`).join('')}</ul>
+                                    </div>
+                                    <div>
+                                        <p class="text-[11px] text-slate-400">${item.preplabel}</p>
+                                    </div>
+                                    <div>
+                                        <ul class="step-list">${item.prep.map(s => `<li class="step-item text-[11px]">${s}</li>`).join('')}</ul>
+                                    </div>
+                                    <div>
+                                        <p class="text-[11px] text-slate-400">${item.ruleslabel}</p>
+                                    </div>
+                                    <div>
+                                        <ul class="step-list">${item.rules.map(s => `<li class="step-item text-[11px]">${s}</li>`).join('')}</ul>
+                                    </div>
+                                    <div>
+                                        <p class="text-[11px] text-slate-400">${item.actionlabel}</p>
+                                    </div>
+                                    <div>
+                                        <ul class="step-list">${item.actions.map(s => `<li class="step-item text-[11px]">${s}</li>`).join('')}</ul>
+                                    </div>
+                                    <div>
+                                        <p class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1">Scoring</p>
+                                        <ul class="step-list">${item.scoring.map(s => `<li class="step-item text-[11px]">${s}</li>`).join('')}</ul>
+                                    </div>
+                                  
+                                </div>
+				                <button onclick="closeInfoModal()" class="mt-10 w-full btn-gold">Back to Scoreboard</button>
+
+                            `;
+            
+                        }
+                infoModal.classList.add('active')
+        }
+    
+
+
+        function closeInfoModal() {
+            infoModal.classList.remove('active');
+        }
+
         function startRandomAdventure() {
             const scenarios = data.scenario[0].items;
             const feats = data.scenario[1].items;
@@ -815,13 +956,13 @@ function renderScoreboard() {
                     <div class="mb-12 text-center bg-white/5 p-8 rounded-2xl border border-white/10">
                         <h2 class="heading-font gold-text text-3xl mb-4 uppercase tracking-[0.2em]">Active Adventure</h2>
                         <div class="flex flex-col md:flex-row justify-center gap-8 text-sm">
-                            <div class="p-4 bg-black/30 rounded border border-white/5 flex-1">
-                                <p class="text-[10px] uppercase opacity-40 mb-1">Scenario</p>
-                                <p class="heading-font text-lg text-white font-bold">${scenario ? scenario.name : 'None Selected'}</p>
+                           <div onclick="${selectedScenario ? `showInfo('scenario', '${selectedScenario}')` : ''}" class="p-4 bg-black/10 rounded border border-slate-700/20 flex-1 cursor-pointer hover:border-amber-500/50 transition-colors">
+                                <p class="text-[10px] uppercase opacity-40 mb-1">Scenario (Click for Info)</p>
+                                <p class="heading-font text-lg font-bold">${scenario ? scenario.name : 'None'}</p>
                             </div>
-                            <div class="p-4 bg-black/30 rounded border border-white/5 flex-1">
-                                <p class="text-[10px] uppercase opacity-40 mb-1">Feat</p>
-                                <p class="heading-font text-lg text-white font-bold">${feat ? feat.name : 'None Selected'}</p>
+                            <div onclick="${selectedFeat ? `showInfo('feat', '${selectedFeat}')` : ''}" class="p-4 bg-black/10 rounded border border-slate-700/20 flex-1 cursor-pointer hover:border-amber-500/50 transition-colors">
+                                <p class="text-[10px] uppercase opacity-40 mb-1">Feat (Click for Info)</p>
+                                <p class="heading-font text-lg font-bold">${feat ? feat.name : 'None'}</p>
                             </div>
                         </div>
                     </div>
