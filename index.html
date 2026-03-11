@@ -792,33 +792,37 @@
                         </div>
                     </div>
                     <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="bg-white/5 p-4 rounded-lg border border-white/5">
+                        <div class="action-card p-8 rounded-2xl">
                             <h4 class="heading-font gold-text text-xs uppercase mb-2">Block LoS</h4>
-                            <p class="text-xs text-slate-400">The element blocks all Lines of Sight drawn through it, as well as LoS drawn from within it and those drawn into it. Unless a terrain feature has this keyword, it is never considered to block LoS.</p>
+                            <p class="text-xs text-slate-200">The element blocks all Lines of Sight drawn through it, as well as LoS drawn from within it and those drawn into it. Unless a terrain feature has this keyword, it is never considered to block LoS.</p>
                         </div>
-                        <div class="bg-white/5 p-4 rounded-lg border border-white/5">
+                        <div class="action-card p-8 rounded-2xl">
                             <h4 class="heading-font gold-text text-xs uppercase mb-2">Cover (D)</h4>
-                            <p class="text-xs text-slate-400">Units adjacent to this terrain feature can benefit from cover from a ranged attack. (See “Attacking at a distance. Cover”). The ‘D’ value indicates the automatic dice or symbols that adjacent units add to their defense roll.</p>
+                            <p class="text-xs text-slate-200">Units adjacent to this terrain feature can benefit from cover from a ranged attack. (See “Attacking at a distance. Cover”). The ‘D’ value indicates the automatic dice or symbols that adjacent units add to their defense roll.</p>
                         </div>
-                        <div class="bg-white/5 p-4 rounded-lg border border-white/5">
+                        <div class="action-card p-8 rounded-2xl">
                             <h4 class="heading-font gold-text text-xs uppercase mb-2">Impassable</h4>
-                            <p class="text-xs text-slate-400">Units cannot move through this terrain feature or end their movement on it. If an element gains the Impassable characteristic during battle (for example, as a result of a spell), units within it must move to become adjacent.</p>
+                            <p class="text-xs text-slate-200">Units cannot move through this terrain feature or end their movement on it. If an element gains the Impassable characteristic during battle (for example, as a result of a spell), units within it must move to become adjacent.</p>
                         </div>
-                        <div class="bg-white/5 p-4 rounded-lg border border-white/5">
+                        <div class="action-card p-8 rounded-2xl">
                             <h4 class="heading-font gold-text text-xs uppercase mb-2">Lethal (X : D)</h4>
-                            <p class="text-xs text-slate-400">Units defined by ‘X’, which are adjacent to this element at the beginning of their activation, suffer a melee attack with a ‘D’ roll. The terrain element cannot take damage and will not push back units.</br> </br> “X” can be the name of a unit, a characteristic, a keyword, or several groups of them separated by lines (“|”). (See examples in “Characters. Join a unit”). If no ‘X’ value is specified, the effect is applicable to all units.</p>
+                            <p class="text-xs text-slate-200">Units defined by ‘X’, which are adjacent to this element at the beginning of their activation, suffer a melee attack with a ‘D’ roll. The terrain element cannot take damage and will not push back units.</br> </br> “X” can be the name of a unit, a characteristic, a keyword, or several groups of them separated by lines (“|”). (See examples in “Characters. Join a unit”). If no ‘X’ value is specified, the effect is applicable to all units.</p>
                         </div>
-                        <div class="bg-white/5 p-4 rounded-lg border border-white/5">
+                        <div class="action-card p-8 rounded-2xl">
                             <h4 class="heading-font gold-text text-xs uppercase mb-2">Rugged (X) </h4>
-                            <p class="text-xs text-slate-400"> Units defined by ‘X’ receive the slowed state at any moment they are adjacent to the terrain element during their activation. In addition, these units cannot declare charge if the charge movement would take the unit adjacent to the terrain element at any point of its trajectory. </br> </br> “X” can be the name of a unit, a characteristic, a keyword, or several groups of them separated by lines (“|”). (See examples in “Characters. Join a unit”). If no ‘X’ value is specified, the effect is applicable to all units.</p>
+                            <p class="text-xs text-slate-200"> Units defined by ‘X’ receive the slowed state at any moment they are adjacent to the terrain element during their activation. In addition, these units cannot declare charge if the charge movement would take the unit adjacent to the terrain element at any point of its trajectory. </br> </br> “X” can be the name of a unit, a characteristic, a keyword, or several groups of them separated by lines (“|”). (See examples in “Characters. Join a unit”). If no ‘X’ value is specified, the effect is applicable to all units.</p>
                         </div>
-                        <div class="bg-white/5 p-4 rounded-lg border border-white/5">
+                        <div class="action-card p-8 rounded-2xl">
                             <h4 class="heading-font gold-text text-xs uppercase mb-2">Sinister (X) </h4>
-                            <p class="text-xs text-slate-400">Units defined by ‘X’ that are within 4 strides of this element at the start of their activation must pass a WP test or become stressed. </br> </br> “X” can be the name of a unit, a characteristic, a keyword, or several groups of them separated by lines (“|”). (See examples in “Characters. Join a unit”). If no ‘X’ value is specified, the effect is applicable to all units.</p>
+                            <p class="text-xs text-slate-200">Units defined by ‘X’ that are within 4 strides of this element at the start of their activation must pass a WP test or become stressed. </br> </br> “X” can be the name of a unit, a characteristic, a keyword, or several groups of them separated by lines (“|”). (See examples in “Characters. Join a unit”). If no ‘X’ value is specified, the effect is applicable to all units.</p>
                         </div>
-                        <div class="bg-white/5 p-4 rounded-lg border border-white/5">
+                        <div class="action-card p-8 rounded-2xl">
                             <h4 class="heading-font gold-text text-xs uppercase mb-2">Trap (X) </h4>
-                            <p class="text-xs text-slate-400"> This terrain feature has been created by a unit using a skill or spell. Units that can remove traps can remove this terrain element from the battlefield.</p>
+                            <p class="text-xs text-slate-200"> This terrain feature has been created by a unit using a skill or spell. Units that can remove traps can remove this terrain element from the battlefield.</p>
+                        </div>
+                        <div class="action-card p-8 rounded-2xl">
+                            <h4 class="heading-font gold-text text-xs uppercase mb-2">Fog</h4>
+                            <p class="text-xs text-slate-200"> A unit that ends its activation within 4 strides of a Fog marker will receive 1 <img src='Tinge.png' style= 'width:20px; display:inline; vertical-align:middle;'/>. Fog markers do not block LoS and they do not interrupt movement. A unit cannot place a Fog marker within 10 strides of another Fog marker.</p>
                         </div>
                     </div>
                 </div>
