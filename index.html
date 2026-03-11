@@ -20,6 +20,9 @@
 
         body {
             background-color: var(--warcrow-dark);
+            background-image: url(background.png);
+            background-repeat: no-repeat;
+            background-size: cover;
             color: #e2e8f0;
             font-family: 'Inter', sans-serif;
             overflow-x: hidden;
@@ -386,12 +389,14 @@
             <div onclick="setView('scenario')" id="side-nav-scenario" class="side-nav-link">Scenario</div>
             <div onclick="setView('scoreboard')" id="side-nav-scoreboard" class="side-nav-link">Scoreboard</div>
             <div onclick="setView('summary')" id="side-nav-summary" class="side-nav-link">Turn Summary</div>
-            <div onclick="setView('tests')" id="side-nav-tests" class="side-nav-link">Test Summary</div>
+        <!--<div onclick="setView('tests')" id="side-nav-tests" class="side-nav-link">Test Summary</div>
             <div onclick="setView('actions')" id="side-nav-actions" class="side-nav-link">Actions</div>
-            <div onclick="setView('magic')" id="side-nav-magic" class="side-nav-link">Magic</div>
+            <div onclick="setView('magic')" id="side-nav-magic" class="side-nav-link">Magic</div> --->
             <div onclick="setView('states')" id="side-nav-states" class="side-nav-link">States</div>
             <div onclick="setView('keywords')" id="side-nav-keywords" class="side-nav-link">Keywords</div>
             <div onclick="setView('terrain')" id="side-nav-terrain" class="side-nav-link">Terrain</div>
+            <div onclick="setView('about')" id="side-nav-about" class="side-nav-link">About</div>
+
         </nav>
         <div class="p-6 bg-black/20 text-[10px] text-slate-600 uppercase tracking-widest text-center">
             Warcrow Reference v1.5.1
@@ -606,25 +611,25 @@
                     items: [
                         {
                             name: "1. Start of Round",
-                            desc: "Preparation before activations begin.",
-                            steps: ["Advance Round Counter.", "Resolve Start of Round Effects.", "Initiative Roll."]
+                            desc: "1. Place End round marker on the position indicated in the scenario</br></br> 2. Resolve Effects that apply during the begining of the round </br></br> <i> Scenario effects are resolved first then the player with initiave determines which company executes their effects first.",
+                            steps: []
                         },
                         {
                             name: "2. The Turn Phase",
-                            desc: "The core of the game where units act.",
-                            steps: ["Alternating Activations.", "Perform up to 2 Actions.", "Mark Activated.", "Pass if no units remain."]
+                            desc: "1.The player with iniative determines activation order</br></br> 2. The first company activates a unit</br></br> 3. the second company activates a unit</br></br> 4.End of Turn, effects that activate at the end of the turn are resolved.</br></br> <i>Repeat activation order until the Turn Conuter reaches the End of Round Marker",
+                            steps: []
                         },
                         {
                             name: "3. End of Round",
-                            desc: "Cleanup and objective scoring.",
-                            steps: ["Resolve End of Round Effects.", "Score Victory Points.", "Remove Activated Tokens.", "Check Game End."]
+                            desc: "1. Resolve scenario effects, then both company effects</br><br> 2. Calculate Victory Points </br></br> 3. Remove up to two stress from units that did not active this round, Then Reduce Stress from units that have an activation token </br></br> 4. Check for Tinge Effects </br></br> 5. No One gets left Behind: Units without an activation token can perfrom a Move or Rest action(Must not be demoralized or engaged in combat)</br></br> 6. Remove Activatio Tokens</br></br> 7. Change Initiaitive and Advance the End of Round Token.",
+                            steps: []
                         }
                     ]
                 }
             ],
             tests: [
                 {
-                    category: "Attack Resolutions",
+                    category: "Resolving Face to Face Rolls",
                     items: [
                         {
                             name: "Melee Attack Process",
@@ -726,8 +731,10 @@
                     { name: "<img src='Spell.png' style= 'width:40px; display:inline; vertical-align:middle;'/> Spell", desc: "Ignores some shields." },
                     { name: "<img src='tinge.png' style= 'width:40px; display:inline; vertical-align:middle;'/> Tinge", desc: "Ignores some shields." },
                 ] }
-            ]
-        };
+            ],
+            about:[],
+            reference:[]
+        };  
 
         const mainContent = document.getElementById('mainContent');
         const searchInput = document.getElementById('searchInput');
@@ -916,36 +923,30 @@
                             <p class="text-[10px] opacity-60 uppercase">Scenarios & Feats</p>
                         </div>
                         <div onclick="setView('scoreboard')" class="action-card p-8 rounded-xl cursor-pointer border-emerald-500/30">
-                            <h3 class="heading-font text-xl mb-1 text-emerald-400">Scoreboard</h3>
+                            <h3 class="heading-font text-xl mb-1 text-emerald-400">Adventure Tracker</h3>
                             <p class="text-[10px] opacity-60 uppercase">MP & AP Tracker</p>
                         </div>
                         <div onclick="setView('summary')" class="action-card p-8 rounded-xl cursor-pointer border-blue-500/30">
                             <h3 class="heading-font text-xl mb-1 text-blue-400">Turn Summary</h3>
                             <p class="text-[10px] opacity-60 uppercase">Turn Structure</p>
                         </div>
-                        <div onclick="setView('tests')" class="action-card p-8 rounded-xl cursor-pointer border-blue-500/30">
-                            <h3 class="heading-font text-xl mb-1 text-blue-400">Test Summary</h3>
-                            <p class="text-[10px] opacity-60 uppercase">Attack Process</p>
-                        </div>
-                          <div onclick="setView('actions')" class="action-card p-8 rounded-xl cursor-pointer border-cyan-500/30">
-                            <h3 class="heading-font text-xl mb-1 text-cyan-400">Actions</h3>
-                        </div>
-                            <div onclick="setView('magic')" class="action-card p-8 rounded-xl cursor-pointer border-cyan-500/30">
-                            <h3 class="heading-font text-xl mb-1 text-cyan-400">Magic</h3>
-                        </div>
-                           <div onclick="setView('states')" class="action-card p-8 rounded-xl cursor-pointer border-blue-500/30">
+
+                        <div onclick="setView('states')" class="action-card p-8 rounded-xl cursor-pointer border-blue-500/30">
                             <h3 class="heading-font text-xl mb-1 text-blue-400">States</h3>
+                            <p class="text-[10px] opacity-60 uppercase">Tokens & Effects</p>
                         </div>
                         <div onclick="setView('keywords')" class="action-card p-8 rounded-xl cursor-pointer border-blue-500/30">
                             <h3 class="heading-font text-xl mb-1 text-blue-400">Keywords</h3>
                         </div>
-                        <div onclick="setView('abilities')" class="action-card p-8 rounded-xl cursor-pointer border-blue-500/30">
-                            <h3 class="heading-font text-xl mb-1 text-blue-400">Abilities</h3>
+                            <div onclick="setView('terrain')" class="action-card p-8 rounded-xl cursor-pointer border-green-500/30">
+                            <h3 class="heading-font text-xl mb-1 text-green-400">Terrain</h3>
+                            <p class="text-[10px] opacity-60 uppercase">Examples & Effects</p>
                         </div>
                     </div>
                 </div>
             `;
         }
+        
 
 function renderScoreboard() {
             const scenario = data.scenario[0].items.find(i => i.id === selectedScenario);
@@ -953,9 +954,9 @@ function renderScoreboard() {
 
             mainContent.innerHTML = `
                 <div class="fade-in">
-                    <div class="mb-12 text-center bg-white/5 p-8 rounded-2xl border border-white/10">
+                    <div class="mb-12 text-center bg-white/5 p-4 rounded-2xl border border-white/10">
                         <h2 class="heading-font gold-text text-3xl mb-4 uppercase tracking-[0.2em]">Active Adventure</h2>
-                        <div class="flex flex-col md:flex-row justify-center gap-8 text-sm">
+                        <div class="flex flex-col md:flex-row justify-center gap-4 text-sm">
                            <div onclick="${selectedScenario ? `showInfo('scenario', '${selectedScenario}')` : ''}" class="p-4 bg-black/10 rounded border border-slate-700/20 flex-1 cursor-pointer hover:border-amber-500/50 transition-colors">
                                 <p class="text-[10px] uppercase opacity-40 mb-1">Scenario (Click for Info)</p>
                                 <p class="heading-font text-lg font-bold">${scenario ? scenario.name : 'None'}</p>
@@ -967,7 +968,7 @@ function renderScoreboard() {
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         ${[1, 2].map(p => {
                             const military = scoreState[`p${p}`].military;
                             const arcane = scoreState[`p${p}`].arcane;
@@ -995,7 +996,7 @@ function renderScoreboard() {
                                                 <button onclick="updateScore('p${p}', 'arcane', 1)" class="counter-btn border-purple-900/40">+</button>
                                             </div>
                                         </div>
-                                        <div class="mt-8 pt-8 border-t border-white/10 text-center">
+                                        <div class="mt-8 pt-4 border-t border-white/10 text-center">
                                             <p class="text-[10px] uppercase tracking-widest text-slate-500 mb-2 font-bold">Total Victory Points</p>
                                             <div class="text-4xl heading-font gold-text font-bold">${victoryTotal}</div>
                                         </div>
@@ -1004,7 +1005,6 @@ function renderScoreboard() {
                             `;
                         }).join('')}
                     </div>
-
                     <div class="mt-16 flex flex-col items-center gap-6">
                         <button onclick="resetAll()" class="btn-danger w-full max-w-xs">End Adventure</button>
                     </div>
@@ -1036,7 +1036,7 @@ function renderScoreboard() {
             renderScenarioSelection();
         }
 
-                function renderScenarioSelection() {
+        function renderScenarioSelection() {
             mainContent.innerHTML = '<div class="fade-in"></div>';
             const wrapper = mainContent.firstChild;
 
@@ -1207,6 +1207,7 @@ function renderScoreboard() {
             if (currentView === 'home') renderHome();
             else if (currentView === 'scoreboard') renderScoreboard();
             else if (currentView === 'terrain') renderTerrain();
+            else if (currentView === 'about') renderAbout();
             else renderList(currentView, query);
         }
 
@@ -1215,9 +1216,71 @@ function renderScoreboard() {
             else render();
         });
 
+        function renderAbout() {
+            mainContent.innerHTML = `
+                <div class="fade-in max-w-3xl mx-auto py-12">
+                    <div class="text-center mb-16">
+                        <h2 class="heading-font gold-text text-4xl mb-4 tracking-widest">ABOUT THE PROJECT</h2>
+                        <div class="h-1 w-24 bg-amber-500 mx-auto"></div>
+                    </div>
+
+                    <div class="space-y-12 leading-relaxed">
+                        <div class="action-card p-8 rounded-2xl">
+                            <h3 class="heading-font gold-text text-xl mb-4">PURPOSE</h3>
+                            <p class="opacity-80 mb-4">
+                                This application serves as a comprehensive digital companion for players of the <strong>Warcrow Wargame</strong>. 
+                                Designed for speed and accessibility during gameplay, it eliminates the need to flip through heavy rulebooks, 
+                                allowing players to focus on the tactical strategy of the Lindwurm fog.
+                            </p>
+                            <p class="opacity-80">
+                                Whether you're tracking military points on the scoreboard or checking terrain heights, 
+                                everything is optimized for mobile-first tabletop use.
+                            </p>
+                        </div>
+
+                        <div class="action-card p-8 rounded-2xl">
+                            <h3 class="heading-font gold-text text-xl mb-4">COMMUNITY & SOURCE</h3>
+                            <p class="opacity-80 mb-6">
+                                Warcrow Companion is an open-source project. We welcome feedback, rule updates, and technical contributions from the community.
+                            </p>
+                            <div class="flex flex-col sm:flex-row gap-4">
+                                <a href="https://github.com/Varo-Gafil/warcrowreference" target="_blank" class="btn-gold text-center">
+                                    View on GitHub
+                                </a>
+                                <a href="https://github.com/Varo-Gafil/warcrowreference/issues" target="_blank" class="btn-outline text-center">
+                                    Report a Bug
+                                </a>
+                            </div>
+                        </div>
+                        <div class="action-card p-8 rounded-2xl">
+                            <h3 class="heading-font gold-text text-xl mb-4">Maintained by</h3>
+                            <p class="opacity-80 mb-6">
+                               <img src='JDD-FBBanner.png' style= 'display:inline; vertical-align:middle;'/>
+                            </p>
+                            
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="action-card p-6 rounded-xl">
+                                <h4 class="text-[10px] uppercase tracking-widest gold-text font-bold mb-3">VERSION</h4>
+                                <p class="heading-font">v0.5.0 Stable</p>
+                            </div>
+                            <div class="action-card p-6 rounded-xl">
+                                <h4 class="text-[10px] uppercase tracking-widest gold-text font-bold mb-3">LAST UPDATE</h4>
+                                <p class="heading-font">March 2026</p>
+                            </div>
+                        </div>
+
+                        <div class="pt-8 text-center opacity-40 text-xs italic">
+                            <p>Corvus Belli and Warcrow are trademarks or registered trademarks of Corvus Belli S.L. in Spain and/or other countries.</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
         // Initialize
         render();
     </script>
 </body>
-
 </html>
