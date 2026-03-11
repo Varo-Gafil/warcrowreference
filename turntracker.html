@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arcane Turn Counter</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #0f172a;
+            background-image: url(background.png);
+            color: #f8fafc;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            touch-action: manipulation;
+        }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 240px 1fr 240px;
+            gap: 1rem;
+            align-items: start;
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding-top: 1rem;
+        }
+
+        @media (max-width: 1024px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+            .side-panel {
+                order: 2;
+            }
+            .center-panel {
+                order: 1;
+            }
+        }
+
+        .side-panel {
+            background: rgba(30, 41, 59, 0.7);
+            padding: 1.25rem;
+            border-radius: 1rem;
+            border: 1px solid #334155;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            backdrop-filter: blur(8px);
+            min-height: 450px;
+            position: relative;
+        }
+
+        .faction-header {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .faction-emblem {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid #ffd700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: #0f172a;
+        }
+
+        .faction-emblem img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .faction-emblem span {
+            font-weight: 900;
+            font-size: 1.5rem;
+            text-shadow: 0 0 10px black;
+        }
+
+        .change-faction-btn {
+            font-size: 10px;
+            color: #94a3b8;
+            text-decoration: underline;
+            cursor: pointer;
+            margin-top: 4px;
+        }
+
+        .change-faction-btn:hover {
+            color: #ffd700;
+        }
+
+        .faction-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .faction-btn {
+            aspect-ratio: 1/1;
+            border-radius: 0.75rem;
+            border: 2px solid #475569;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(15, 23, 42, 0.5);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .faction-btn img {
+            width: 60%;
+            height: 60%;
+            object-fit: contain;
+            margin-bottom: 4px;
+            filter: drop-shadow(0 0 5px rgba(0,0,0,0.5));
+        }
+
+        .faction-btn:hover {
+            transform: scale(1.05);
+            border-color: #ffd700;
+        }
+
+        .faction-btn span {
+            font-size: 10px;
+            font-weight: bold;
+            z-index: 2;
+        }
+
+        .dial-container {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        #dial-image {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.8), 0 0 20px rgba(184, 134, 11, 0.3);
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+
+        .token-slot {
+            position: absolute;
+            width: 16%;
+            height: 16%;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 20;
+        }
+
+        .token {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-weight: 800;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            color: white;
+            text-shadow: 1px 1px 2px black, 0 0 5px black;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.4);
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            animation: spawn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            user-select: none;
+            border: 2px solid transparent;
+            box-sizing: border-box;
+            transition: transform 0.2s ease;
+        }
+
+        .theme-standard-red { background-color: #991b1b; border-color: #ef4444; }
+        .theme-standard-blue { background-color: #1e3a8a; border-color: #3b82f6; }
+        .theme-arcane { background-color: #6b21a8; border-color: #a855f7; }
+        .theme-nature { background-color: #065f46; border-color: #10b981; }
+        .theme-void { background-color: #111827; border-color: #6366f1; }
+        .theme-gold { background-color: #854d0e; border-color: #facc15; }
+        .theme-skull { background-color: #334155; border-color: #94a3b8; }
+        .theme-skill { 
+            background-color: #1e293b; 
+            border-color: #ffd700; 
+            background-image: url('skill.png');
+            background-size: contain;
+            background-position: center;
+        }
+        .theme-spell { 
+            background-color: #1e293b; 
+            border-color: #ffd700; 
+            background-image: url('spell.png');
+            background-size: contain;
+            background-position: center;
+        }
+        .theme-passive { 
+            background-color: #1e293b; 
+            border-color: #ffd700; 
+            background-image: url('passive.png');
+            background-size: contain;
+            background-position: center;
+        }
+        .theme-demoralized { 
+            background-color: #1e293b; 
+            border-color: #ffd700; 
+            background-image: url('Demoralized.png');
+            background-size: contain;
+            background-position: center;
+        }
+        .theme-command { 
+            background-color: #1e293b; 
+            border-color: #ffd700; 
+            background-image: url('command.png');
+            background-size: contain;
+            background-position: center;
+        }
+        .theme-event { 
+            background-color: #1e293b; 
+            border-color: #ffd700; 
+            background-image: url('event.png');
+            background-size: contain;
+            background-position: center;
+        }
+        .theme-end { 
+            background-color: #1e293b; 
+            border-color: #ffd700; 
+            background-image: url('RoundEnd.png');
+            background-size: contain;
+            background-position: center;
+            z-index: 10 !important;
+        }
+
+        @keyframes spawn {
+            from { transform: scale(0.5); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .token-option {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .token-option:hover { background: rgba(255, 255, 255, 0.1); }
+        .token-option.active { background: rgba(184, 134, 11, 0.2); border-color: #b8860b; }
+
+        .preview-circle {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 9px;
+            border: 1px solid rgba(255,255,255,0.2);
+            font-weight: bold;
+        }
+
+        #turn-indicator {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-top: 25px solid #ffd700;
+            filter: drop-shadow(0 0 8px #ffd700);
+            z-index: 40;
+            pointer-events: none;
+            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            align-items: center;
+            margin-top: 1rem;
+            padding-bottom: 2rem;
+        }
+
+        .btn-group { display: flex; gap: 1rem; }
+        .btn {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border: 1px solid #b8860b;
+            color: #ffd700;
+            padding: 0.75rem 1.5rem;
+            font-size: 1.25rem;
+            font-weight: bold;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            min-width: 70px;
+        }
+
+        .btn-round-end {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            background: rgba(184, 134, 11, 0.1);
+            border: 1px dashed #b8860b;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #ffd700;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .btn-round-end.active { background: #b8860b; color: white; border-style: solid; }
+
+        #turn-display {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: #ffd700;
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+            line-height: 1;
+        }
+    </style>
+</head>
+<body class="p-4 min-h-screen flex flex-col items-center">
+
+    <div class="text-center mb-2">
+        <h1 class="text-xs font-bold uppercase tracking-widest text-slate-400">Current Turn</h1>
+        <div id="turn-display">1</div>
+    </div>
+
+    <div class="main-layout">
+        <div class="side-panel" id="panel-red">
+            <div id="header-red"></div>
+            <div id="selection-red" class="hidden">
+                <h2 class="text-red-500 font-bold uppercase tracking-tighter border-b border-red-900 pb-2 mb-2 text-sm text-center">Select Red Faction</h2>
+                <div class="faction-grid" id="faction-grid-red"></div>
+            </div>
+            <div id="options-red"></div>
+        </div>
+
+        <div class="center-panel">
+            <div class="dial-container">
+                <img id="dial-image" src="TurnCounter.png" alt="Turn Counter Dial" onerror="this.src='https://via.placeholder.com/600?text=Turn+Counter+Image+Missing'">
+                <div id="turn-indicator"></div>
+                <div id="slots-container" class="absolute inset-0"></div>
+            </div>
+        </div>
+
+        <div class="side-panel" id="panel-blue">
+            <div id="header-blue"></div>
+            <div id="selection-blue" class="hidden">
+                <h2 class="text-blue-500 font-bold uppercase tracking-tighter border-b border-blue-900 pb-2 mb-2 text-sm text-center">Select Blue Faction</h2>
+                <div class="faction-grid" id="faction-grid-blue"></div>
+            </div>
+            <div id="options-blue"></div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button id="round-end-toggle" class="btn-round-end" onclick="setActiveToken('round-end', this)">
+            <div class="preview-circle theme-end">END</div>
+            End Phase Token
+        </button>
+
+        <div class="btn-group">
+            <button class="btn" onclick="changeTurn(-1)">−</button>
+            <button class="btn" onclick="resetTurn()">RESET</button>
+            <button class="btn" onclick="changeTurn(1)">+</button>
+        </div>
+    </div>
+
+    <script>
+        let currentTurn = 1;
+        let activeTokenConfig = 'red-standard'; 
+        const totalTurns = 10;
+        const tokenStacks = {};
+        for(let i=1; i<=10; i++) tokenStacks[i] = [];
+
+        const factions = {
+            embersig: {
+                name: 'Hegemony of Embersig',
+                icon: 'embersig.png',
+                tokens: [
+                    { id: 'skill-Explosives', name: 'Explosives', type: 'skill', label: '' },
+                    { id: 'spell-Steal The Essence', name: 'Steal The Essence', type: 'spell', label: '' },
+                    { id: 'spell-The Passing of Time', name: 'The Passing of Time', type: 'spell', label: '' },
+                    { id: 'event-Event 1', name: 'Event #1', type: 'event', label: '' },
+                    { id: 'event-Event 2', name: 'Event #2', type: 'event', label: '' },
+                    { id: 'event-Event 3', name: 'Event #3', type: 'event', label: '' },
+                    { id: 'event-Event 4', name: 'Event #4', type: 'event', label: '' },
+                    { id: 'demoralized-Demoralized 1', name: 'Demoralized #1', type: 'demoralized', label: '' },
+                    { id: 'demoralized-Demoralized 2', name: 'Demoralized #2', type: 'demoralized', label: '' }
+                ]
+            },
+            tribes: {
+                name: 'Northern Tribes',
+                icon: 'ntribes.png',
+                tokens: [
+                    { id: 'spell-Spirit of the thermapleurus', name: 'Spirit of the Thermapleurus', type: 'spell', label: '' },
+                    { id: 'command-Crack the whip', name: 'Crack the whip', type: 'command', label: '' },
+                    { id: 'command-Move your asses!', name: 'Move your asses!', type: 'command', label: '' },
+                    { id: 'event-Event 1', name: 'Event #1', type: 'event', label: '' },
+                    { id: 'event-Event 2', name: 'Event #2', type: 'event', label: '' },
+                    { id: 'event-Event 3', name: 'Event #3', type: 'event', label: '' },
+                    { id: 'event-Event 4', name: 'Event #4', type: 'event', label: '' },
+                    { id: 'demoralized-Demoralized 1', name: 'Demoralized #1', type: 'demoralized', label: '' },
+                    { id: 'demoralized-Demoralized 2', name: 'Demoralized #2', type: 'demoralized', label: '' },
+                ]
+            },
+            syenann: {
+                name: 'Sÿenann',
+                icon: 'selves.png',
+                tokens: [
+                    { id: 'spell-Ballad of the dryad', name: 'Ballad of the dryad', type: 'spell', label: '' },
+                    { id: 'spell-Exalting the troops', name: 'Exalting the troops', type: 'spell', label: '' },
+                    { id: 'command-Stomp the ground', name: 'Stomp the ground', type: 'command', label: '' },
+                    { id: 'spell-Enter the Portal', name: 'Enter the Portal', type: 'spell', label: '' },
+                    { id: 'event-Event 1', name: 'Event #1', type: 'event', label: '' },
+                    { id: 'event-Event 2', name: 'Event #2', type: 'event', label: '' },
+                    { id: 'event-Event 3', name: 'Event #3', type: 'event', label: '' },
+                    { id: 'event-Event 4', name: 'Event #4', type: 'event', label: '' },
+                    { id: 'demoralized-Demoralized 1', name: 'Demoralized #1', type: 'demoralized', label: '' },
+                    { id: 'demoralized-Demoralized 2', name: 'Demoralized #2', type: 'demoralized', label: '' },
+                ]
+            },
+            feudom: {
+                name: 'Feudom',
+                icon: 'feudom.png',
+                tokens: [
+                    { id: 'spell-Shield of the Moon Goddesses', name: 'Shield of the Moon Goddesses', type: 'spell', label: '' },
+                    { id: 'spell-Enchant weapons', name: 'Enchant weapons', type: 'spell', label: '' },
+                    { id: 'spell-Psalm of the Waning Moon', name: 'Psalm of the Waning Moon', type: 'spell', label: '' },
+                    { id: 'spell-Gaze of Selas', name: ' Gaze of Selas', type: 'spell', label: '' },
+                    { id: 'command-blessed Brooch', name: ' Gaze of Selas', type: 'command', label: '' },
+                    { id: 'spell-Protected by Selas', name: ' Protected by Selas', type: 'spell', label: '' },
+                    { id: 'spell-Blessing of Selas', name: ' Blessing of Selas', type: 'spell', label: '' },
+                    { id: 'event-Event 1', name: 'Event #1', type: 'event', label: '' },
+                    { id: 'event-Event 2', name: 'Event #2', type: 'event', label: '' },
+                    { id: 'event-Event 3', name: 'Event #3', type: 'event', label: '' },
+                    { id: 'event-Event 4', name: 'Event #4', type: 'event', label: '' },
+                    { id: 'demoralized-Demoralized 1', name: 'Demoralized #1', type: 'demoralized', label: '' },
+                    { id: 'demoralized-Demoralized 2', name: 'Demoralized #2', type: 'demoralized', label: '' },
+                ]
+            },
+           scions: {
+                name: 'Scions of Yaldabaoth',
+                icon: 'scions.png',
+                tokens: [
+                    { id: 'spell-Stir the inner fire', name: 'Stir the inner fire', type: 'spell', label: '' },
+                    { id: 'event-Event 1', name: 'Event #1', type: 'event', label: '' },
+                    { id: 'event-Event 2', name: 'Event #2', type: 'event', label: '' },
+                    { id: 'event-Event 3', name: 'Event #3', type: 'event', label: '' },
+                    { id: 'event-Event 4', name: 'Event #4', type: 'event', label: '' },
+                    { id: 'demoralized-Demoralized 1', name: 'Demoralized #1', type: 'demoralized', label: '' },
+                    { id: 'demoralized-Demoralized 2', name: 'Demoralized #2', type: 'demoralized', label: '' },
+                ]
+            },
+            mount: {
+                name: 'Mounthaven',
+                icon: 'mounthaven.png',
+                tokens: [
+                    { id: 'event-Event 1', name: 'Event #1', type: 'event', label: '' },
+                    { id: 'event-Event 2', name: 'Event #2', type: 'event', label: '' },
+                    { id: 'event-Event 3', name: 'Event #3', type: 'event', label: '' },
+                    { id: 'event-Event 4', name: 'Event #4', type: 'event', label: '' },
+                    { id: 'demoralized-Demoralized 1', name: 'Demoralized #1', type: 'demoralized', label: '' },
+                    { id: 'demoralized-Demoralized 2', name: 'Demoralized #2', type: 'demoralized', label: '' },
+                ]
+            }
+        };
+
+        function showSelection(side) {
+            const selectionPanel = document.getElementById(`selection-${side}`);
+            const grid = document.getElementById(`faction-grid-${side}`);
+            selectionPanel.classList.remove('hidden');
+            document.getElementById(`header-${side}`).innerHTML = '';
+            document.getElementById(`options-${side}`).innerHTML = '';
+            
+            grid.innerHTML = '';
+            Object.keys(factions).forEach(key => {
+                const faction = factions[key];
+                const btn = document.createElement('div');
+                const themeClass = side === 'red' && key === 'standard' ? 'theme-standard-red' : 
+                                 side === 'blue' && key === 'standard' ? 'theme-standard-blue' : 
+                                 `theme-${key}`;
+                
+                btn.className = `faction-btn ${themeClass}`;
+                btn.onclick = () => confirmFaction(side, key);
+                
+                // Try to load image, fallback to text
+                btn.innerHTML = `
+                    <img src="${faction.icon}" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
+                    <span style="display:none; font-size: 24px;">${faction.name[0]}</span>
+                    <span>${faction.name}</span>
+                `;
+                grid.appendChild(btn);
+            });
+        }
+
+        function confirmFaction(side, factionKey) {
+            document.getElementById(`selection-${side}`).classList.add('hidden');
+            const header = document.getElementById(`header-${side}`);
+            const faction = factions[factionKey];
+            const themeClass = side === 'red' && factionKey === 'standard' ? 'theme-standard-red' : 
+                               side === 'blue' && factionKey === 'standard' ? 'theme-standard-blue' : 
+                               `theme-${factionKey}`;
+            
+            const emblemLabel = factionKey === 'standard' ? (side === 'red' ? 'LEG' : 'UNI') : factionKey.substring(0, 3).toUpperCase();
+
+            header.innerHTML = `
+                <div class="faction-header">
+                    <h2 class="text-${side}-500 font-bold uppercase tracking-tighter text-sm mb-2">${side.toUpperCase()} PLAYER</h2>
+                    <div class="faction-emblem ${themeClass}">
+                        <img src="${faction.icon}" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
+                        <span style="display:none">${emblemLabel}</span>
+                    </div>
+                    <div class="font-bold text-xs text-slate-300 uppercase">${faction.name} Faction</div>
+                    <div class="change-faction-btn" onclick="showSelection('${side}')">Change Faction</div>
+                </div>
+            `;
+
+            const container = document.getElementById(`options-${side}`);
+            container.innerHTML = '';
+            
+            faction.tokens.forEach((token, idx) => {
+                const opt = document.createElement('div');
+                const fullId = `${side}-${token.id}`;
+                opt.className = `token-option ${activeTokenConfig === fullId ? 'active' : ''}`;
+                opt.onclick = () => setActiveToken(fullId, opt);
+                const tokenTheme = getThemeClass(fullId, token.type);
+                opt.innerHTML = `<div class="preview-circle ${tokenTheme}">${token.label}</div><span>${token.name}</span>`;
+                container.appendChild(opt);
+                if (idx === 0) setActiveToken(fullId, opt);
+            });
+
+            /* const elite = document.createElement('div');
+            const eliteId = `${side}-elite`;
+            elite.className = `token-option ${activeTokenConfig === eliteId ? 'active' : ''}`;
+            elite.onclick = () => setActiveToken(eliteId, elite);
+            elite.innerHTML = `<div class="preview-circle theme-gold">ELI</div><span>Elite Unit</span>`;
+            container.appendChild(elite); */
+        }
+
+        const indicator = document.getElementById('turn-indicator');
+        const display = document.getElementById('turn-display');
+        const slotsContainer = document.getElementById('slots-container');
+        const dialCenterRadius = 32; 
+
+        function setActiveToken(type, el) {
+            activeTokenConfig = type;
+            document.querySelectorAll('.token-option').forEach(opt => opt.classList.remove('active'));
+            document.getElementById('round-end-toggle').classList.remove('active');
+            if (el) el.classList.add('active');
+        }
+
+        function createSlots() {
+            slotsContainer.innerHTML = '';
+            for (let i = 1; i <= 10; i++) {
+                const slot = document.createElement('div');
+                slot.className = 'token-slot';
+                slot.id = `slot-${i}`;
+                const angle = (i % 10) * 36 - 90; 
+                const x = 50 + dialCenterRadius * Math.cos(angle * Math.PI / 180);
+                const y = 50 + dialCenterRadius * Math.sin(angle * Math.PI / 180);
+                slot.style.left = `${x}%`;
+                slot.style.top = `${y}%`;
+                slot.style.transform = `translate(-50%, -50%)`;
+                slot.onclick = (e) => { e.stopPropagation(); handleSlotClick(i); };
+                slotsContainer.appendChild(slot);
+            }
+        }
+
+        function handleSlotClick(turn) {
+            const stack = tokenStacks[turn];
+            if (stack.length > 0 && stack[stack.length - 1] === activeTokenConfig) {
+                stack.pop();
+            } else {
+                if (activeTokenConfig === 'round-end') {
+                    for (let t = 1; t <= totalTurns; t++) {
+                        if (tokenStacks[t].includes('round-end')) {
+                            tokenStacks[t] = tokenStacks[t].filter(item => item !== 'round-end');
+                            renderStack(t);
+                        }
+                    }
+                    stack.unshift('round-end');
+                } else {
+                    stack.push(activeTokenConfig);
+                }
+            }
+            renderStack(turn);
+        }
+
+        function renderStack(turn) {
+            const slot = document.getElementById(`slot-${turn}`);
+            if (!slot) return;
+            slot.innerHTML = '';
+            let hasEndToken = tokenStacks[turn].includes('round-end');
+            tokenStacks[turn].forEach((type, index) => {
+                const token = document.createElement('div');
+                token.className = `token ${getThemeClass(type)}`;
+                token.innerText = getTokenLabel(type);
+                if (type === 'round-end') {
+                    token.style.zIndex = 5;
+                } else {
+                    token.style.zIndex = index + 10;
+                    token.style.marginLeft = `${index * 3}px`;
+                    token.style.marginTop = `${-index * 3}px`;
+                    if (hasEndToken && type !== 'round-end') {
+                        token.style.marginTop = `${(-index * 3) - 8}px`;
+                    }
+                }
+                slot.appendChild(token);
+            });
+        }
+
+        function getThemeClass(fullId) {
+            if (fullId === 'round-end') return 'theme-end';
+            if (fullId.includes('skull')) return 'theme-skull';
+            if (fullId.includes('elite')) return 'theme-gold';
+            if (fullId.includes('arcane')) return 'theme-arcane';
+            if (fullId.includes('nature')) return 'theme-nature';
+            if (fullId.includes('void')) return 'theme-void';
+            if (fullId.includes('skill')) return 'theme-skill';
+            if (fullId.includes('spell')) return 'theme-spell';
+            if (fullId.includes('passive')) return 'theme-passive';
+            if (fullId.includes('demoralized')) return 'theme-demoralized';
+            if (fullId.includes('command')) return 'theme-command';
+            if (fullId.includes('event')) return 'theme-event';
+            return fullId.startsWith('red') ? 'theme-standard-red' : 'theme-standard-blue';
+        }
+
+        function getTokenLabel(type) {
+            if (type === 'round-end') return '';
+            if (type.includes('skull')) return '💀';
+            if (type.includes('elite')) return 'ELI';
+            const parts = type.split('-');
+            const name = parts[parts.length - 1].toUpperCase();
+            return name === 'STANDARD' ? 'UNIT' : name;
+        }
+
+        function changeTurn(delta) {
+            currentTurn += delta;
+            if (currentTurn > totalTurns) currentTurn = 1;
+            if (currentTurn < 1) currentTurn = totalTurns;
+            updateUI();
+        }
+
+        function resetTurn() {
+            currentTurn = 1;
+            for(let i=1; i<=10; i++) tokenStacks[i] = [];
+            tokenStacks[5].push('round-end');
+            for(let i=1; i<=10; i++) renderStack(i);
+            updateUI();
+        }
+
+        function updateUI() {
+            display.innerText = currentTurn;
+            const angle = (currentTurn % 10) * 36 - 90;
+            const orbitRadius = 52.5; 
+            const containerWidth = slotsContainer.offsetWidth;
+            if (containerWidth === 0) return;
+            const pixelX = (orbitRadius / 100) * containerWidth * Math.cos(angle * Math.PI / 180);
+            const pixelY = (orbitRadius / 100) * containerWidth * Math.sin(angle * Math.PI / 180);
+            const arrowRotation = angle + 90;
+            indicator.style.transform = `translate(-50%, -50%) translate(${pixelX}px, ${pixelY}px) rotate(${arrowRotation}deg)`;
+        }
+
+        window.onload = () => {
+            createSlots();
+            showSelection('red');
+            showSelection('blue');
+            resetTurn();
+            updateUI();
+        };
+
+        window.onresize = updateUI;
+    </script>
+</body>
+</html>

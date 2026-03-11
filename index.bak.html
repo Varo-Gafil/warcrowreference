@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arcane Turn Counter</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #0f172a;
+            color: #f8fafc;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            touch-action: manipulation;
+        }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 200px 1fr 200px;
+            gap: 1rem;
+            align-items: center;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 850px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+            .side-panel {
+                order: 2;
+            }
+            .center-panel {
+                order: 1;
+            }
+        }
+
+        .side-panel {
+            background: rgba(30, 41, 59, 0.5);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            border: 1px solid #334155;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .dial-container {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            max-width: 600px;
+            margin: 0 auto;
+            perspective: 1000px;
+        }
+
+        #dial-image {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.8), 0 0 20px rgba(184, 134, 11, 0.3);
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+
+        .token-slot {
+            position: absolute;
+            width: 16%;
+            height: 16%;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 20;
+        }
+
+        .token-slot:hover {
+            background: rgba(255, 215, 0, 0.1);
+        }
+
+        /* Token Styles with Images and Text */
+        .token {
+            position: absolute;
+            width: 90%;
+            height: 90%;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-weight: 800;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: white;
+            text-shadow: 1px 1px 2px black, 0 0 5px black;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.4);
+            background-size: cover;
+            background-position: center;
+            animation: spawn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            user-select: none;
+        }
+
+        /* Team Image Placeholders */
+        .token-red { background-image: linear-gradient(rgba(139, 0, 0, 0.6), rgba(139, 0, 0, 0.6)), url('https://www.transparenttextures.com/patterns/carbon-fibre.png'); background-color: #8b0000; border: 2px solid #ff4d4d; }
+        .token-blue { background-image: linear-gradient(rgba(0, 0, 139, 0.6), rgba(0, 0, 139, 0.6)), url('https://www.transparenttextures.com/patterns/carbon-fibre.png'); background-color: #00008b; border: 2px solid #4d94ff; }
+        .token-gold { background-image: linear-gradient(rgba(184, 134, 11, 0.6), rgba(184, 134, 11, 0.6)), url('https://www.transparenttextures.com/patterns/carbon-fibre.png'); background-color: #b8860b; border: 2px solid #ffd700; }
+        
+        .token-round-end {
+            background-image: url('RoundEnd.png');
+            background-color: #1e293b;
+            border: 2px solid #ffd700;
+        }
+
+        .token-skull {
+            background-image: radial-gradient(circle, #334155, #0f172a);
+            border: 2px solid #94a3b8;
+            font-size: 1.2rem;
+        }
+
+        @keyframes spawn {
+            from { transform: scale(0.5); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .token-option {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+
+        .token-option:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .token-option.active {
+            background: rgba(184, 134, 11, 0.2);
+            border-color: #b8860b;
+        }
+
+        .preview-circle {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        #turn-indicator {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-top: 25px solid #ffd700;
+            filter: drop-shadow(0 0 8px #ffd700);
+            z-index: 40;
+            pointer-events: none;
+            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            align-items: center;
+            margin-top: 2rem;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border: 1px solid #b8860b;
+            color: #ffd700;
+            padding: 0.75rem 1.5rem;
+            font-size: 1.25rem;
+            font-weight: bold;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            min-width: 70px;
+        }
+
+        .btn-round-end {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            background: rgba(184, 134, 11, 0.1);
+            border: 1px dashed #b8860b;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #ffd700;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .btn-round-end.active {
+            background: #b8860b;
+            color: white;
+            border-style: solid;
+        }
+
+        #turn-display {
+            font-size: 3rem;
+            font-weight: 800;
+            color: #ffd700;
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+        }
+    </style>
+</head>
+<body class="p-4 min-h-screen flex flex-col items-center">
+
+    <div class="text-center mb-4">
+        <h1 class="text-lg font-bold uppercase tracking-widest text-slate-400">Current Turn</h1>
+        <div id="turn-display">1</div>
+    </div>
+
+    <div class="main-layout">
+        <!-- Red Player Panel -->
+        <div class="side-panel">
+            <h2 class="text-red-500 font-bold uppercase tracking-tighter border-b border-red-900 pb-2 mb-2">Red Player</h2>
+            <div class="token-option active" onclick="setActiveToken('red-orb', this)">
+                <div class="preview-circle token-red">RED</div>
+                <span>Standard</span>
+            </div>
+            <div class="token-option" onclick="setActiveToken('red-skull', this)">
+                <div class="preview-circle token-skull">💀</div>
+                <span>Defeat</span>
+            </div>
+        </div>
+
+        <!-- Center Dial -->
+        <div class="center-panel">
+            <div class="dial-container">
+                <img id="dial-image" src="TurnCounter.png" alt="Turn Counter Dial" onerror="this.src='https://via.placeholder.com/600?text=Turn+Counter+Image+Missing'">
+                <div id="turn-indicator"></div>
+                <div id="slots-container" class="absolute inset-0"></div>
+            </div>
+        </div>
+
+        <!-- Blue Player Panel -->
+        <div class="side-panel">
+            <h2 class="text-blue-500 font-bold uppercase tracking-tighter border-b border-blue-900 pb-2 mb-2">Blue Player</h2>
+            <div class="token-option" onclick="setActiveToken('blue-orb', this)">
+                <div class="preview-circle token-blue">BLU</div>
+                <span>Standard</span>
+            </div>
+            <div class="token-option" onclick="setActiveToken('blue-skull', this)">
+                <div class="preview-circle token-skull">💀</div>
+                <span>Defeat</span>
+            </div>
+            <div class="token-option" onclick="setActiveToken('gold-orb', this)">
+                <div class="preview-circle token-gold">ELI</div>
+                <span>Elite</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button id="round-end-toggle" class="btn-round-end" onclick="setActiveToken('round-end', this)">
+            <div class="preview-circle token-round-end" style="width: 18px; height: 18px; font-size: 8px;">END</div>
+            End Phase Token
+        </button>
+
+        <div class="btn-group">
+            <button class="btn" onclick="changeTurn(-1)">−</button>
+            <button class="btn" onclick="resetTurn()">RESET</button>
+            <button class="btn" onclick="changeTurn(1)">+</button>
+        </div>
+    </div>
+
+    <script>
+        let currentTurn = 1;
+        let activeTokenConfig = 'red-orb'; 
+        const totalTurns = 10;
+        
+        const tokenStacks = {};
+        for(let i=1; i<=10; i++) tokenStacks[i] = [];
+
+        const indicator = document.getElementById('turn-indicator');
+        const display = document.getElementById('turn-display');
+        const slotsContainer = document.getElementById('slots-container');
+        const dialCenterRadius = 32; 
+
+        function setActiveToken(type, el) {
+            activeTokenConfig = type;
+            document.querySelectorAll('.token-option').forEach(opt => opt.classList.remove('active'));
+            document.getElementById('round-end-toggle').classList.remove('active');
+            el.classList.add('active');
+        }
+
+        function createSlots() {
+            slotsContainer.innerHTML = '';
+            for (let i = 1; i <= 10; i++) {
+                const slot = document.createElement('div');
+                slot.className = 'token-slot';
+                slot.id = `slot-${i}`;
+                slot.dataset.turn = i;
+                
+                const angle = (i % 10) * 36 - 90; 
+                const x = 50 + dialCenterRadius * Math.cos(angle * Math.PI / 180);
+                const y = 50 + dialCenterRadius * Math.sin(angle * Math.PI / 180);
+                
+                slot.style.left = `${x}%`;
+                slot.style.top = `${y}%`;
+                slot.style.transform = `translate(-50%, -50%)`;
+                
+                slot.onclick = (e) => { 
+                    e.stopPropagation(); 
+                    handleSlotClick(i); 
+                };
+                
+                slotsContainer.appendChild(slot);
+            }
+        }
+
+        function handleSlotClick(turn) {
+            const stack = tokenStacks[turn];
+            
+            // Check if top token matches selection to allow removal
+            if (stack.length > 0 && stack[stack.length - 1] === activeTokenConfig) {
+                stack.pop();
+            } else {
+                // Special rule: Only one Round End token globally
+                if (activeTokenConfig === 'round-end') {
+                    for (let t in tokenStacks) {
+                        tokenStacks[t] = tokenStacks[t].filter(type => type !== 'round-end');
+                    }
+                    // Round End ALWAYS goes to the bottom of the stack (start of array)
+                    stack.unshift(activeTokenConfig);
+                } else {
+                    // Other tokens get pushed to the top
+                    stack.push(activeTokenConfig);
+                }
+            }
+            
+            renderStack(turn);
+        }
+
+        function renderStack(turn) {
+            const slot = document.getElementById(`slot-${turn}`);
+            slot.innerHTML = '';
+            const stack = tokenStacks[turn];
+            
+            stack.forEach((type, index) => {
+                const token = document.createElement('div');
+                token.className = `token ${getClassNameForType(type)}`;
+                token.innerText = getTokenText(type);
+                token.style.zIndex = index + 1;
+                token.style.transform = `translate(${index * 2}px, ${-index * 2}px)`;
+                slot.appendChild(token);
+            });
+        }
+
+        function getClassNameForType(type) {
+            switch(type) {
+                case 'red-orb': return 'token-red';
+                case 'blue-orb': return 'token-blue';
+                case 'gold-orb': return 'token-gold';
+                case 'round-end': return 'token-round-end';
+                case 'red-skull':
+                case 'blue-skull': return 'token-skull';
+                default: return '';
+            }
+        }
+
+        function getTokenText(type) {
+            switch(type) {
+                case 'red-orb': return 'RED';
+                case 'blue-orb': return 'BLUE';
+                case 'gold-orb': return 'ELITE';
+                case 'round-end': return 'END';
+                case 'red-skull':
+                case 'blue-skull': return '💀';
+                default: return '';
+            }
+        }
+
+        function changeTurn(delta) {
+            currentTurn += delta;
+            if (currentTurn > totalTurns) currentTurn = 1;
+            if (currentTurn < 1) currentTurn = totalTurns;
+            updateUI();
+        }
+
+        function resetTurn() {
+            currentTurn = 1;
+            for(let i=1; i<=10; i++) {
+                tokenStacks[i] = [];
+                renderStack(i);
+            }
+            // Round End back at bottom of pos 5
+            tokenStacks[5].push('round-end');
+            renderStack(5);
+            
+            updateUI();
+            setActiveToken('red-orb', document.querySelector('.token-option'));
+        }
+
+        function updateUI() {
+            display.innerText = currentTurn;
+            const angle = (currentTurn % 10) * 36 - 90;
+            const orbitRadius = 52.5; 
+            const containerWidth = slotsContainer.offsetWidth;
+            const pixelX = (orbitRadius / 100) * containerWidth * Math.cos(angle * Math.PI / 180);
+            const pixelY = (orbitRadius / 100) * containerWidth * Math.sin(angle * Math.PI / 180);
+            const arrowRotation = angle + 90;
+            indicator.style.transform = `translate(-50%, -50%) translate(${pixelX}px, ${pixelY}px) rotate(${arrowRotation}deg)`;
+        }
+
+        window.onload = () => {
+            createSlots();
+            updateUI();
+            tokenStacks[5].push('round-end');
+            renderStack(5);
+        };
+
+        window.onresize = updateUI;
+    </script>
+</body>
+</html>
