@@ -374,7 +374,7 @@
             border: 1px solid #b8860b;
             color: #ffd700;
             padding: 0.5rem 1.0rem;
-            font-size: 1.25rem;
+            font-size: .75rem;
             font-weight: bold;
             border-radius: 0.75rem;
             cursor: pointer;
@@ -397,7 +397,7 @@
             transition: all 0.2s;
             color: #ffd700;
             font-weight: 600;
-            font-size: 0.875rem;
+            font-size: 0.75rem;
         }
 
         .btn-round-end.active { background: #b8860b; color: white; border-style: solid; }
@@ -424,6 +424,17 @@
     <div class="text-center mb-2">
         <h1 class="text-xs font-bold uppercase tracking-widest text-slate-400">Current Turn</h1>
         <div id="turn-display">1</div>
+                <div class="controls">
+         <button id="round-end-toggle" class="btn-round-end" onclick="setActiveToken('round-end', this)">
+                <div class="preview-circle theme-end">END</div>
+             End Phase Token
+         </button>
+
+        <div class="btn-group">
+            <button class="btn" onclick="changeTurn(-1)">−</button>
+            <button class="btn" onclick="resetTurn()">RESET</button>
+            <button class="btn" onclick="changeTurn(1)">+</button>
+        </div>
     </div>
 
     <div class="main-layout">
@@ -453,17 +464,7 @@
             <div id="options-blue"></div>
         </div>
     </div>
-        <div class="controls">
-         <button id="round-end-toggle" class="btn-round-end" onclick="setActiveToken('round-end', this)">
-                <div class="preview-circle theme-end">END</div>
-             End Phase Token
-         </button>
 
-        <div class="btn-group">
-            <button class="btn" onclick="changeTurn(-1)">−</button>
-            <button class="btn" onclick="resetTurn()">RESET</button>
-            <button class="btn" onclick="changeTurn(1)">+</button>
-        </div>
     </div>
 
 
